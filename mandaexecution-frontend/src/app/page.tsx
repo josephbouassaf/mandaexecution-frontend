@@ -1,6 +1,5 @@
 'use client'
 import { Container, Stack } from "@chakra-ui/react";
-import SwapHistory from "./components/Swap/SwapHistory";
 import SwapRequests from "./components/Swap/SwapRequests";
 import CreateSwap from "./components/Swap/CreateSwap";
 

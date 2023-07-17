@@ -1,6 +1,6 @@
 'use client'
 import Image from "next/image";
-import React from "react";
+import React, { useContext } from "react";
 import mandaLogo from "../../../assets/manda-logo.jpg"; 
 import { useState, useEffect } from "react";
 import detectEthereumProvider from "@metamask/detect-provider";
@@ -9,13 +9,16 @@ import { Box, Button } from "@chakra-ui/react";
 import '../../../styles/Navbar/navbar.css'
 import ErrorModal from "../ErrorModal";
 import { ModalProps } from "../ErrorModal/type";
+import { WalletContext } from "@/app/context/wallet";
+import { Signer, ethers } from "ethers";
 
 
 const Navbar = (props: any):any => {
 
     const [hasProvider, setHasProvider] = useState<boolean | null>(null); 
-    const initialState = {accounts: []}; 
-    const [wallet, setWallet] = useState(initialState); 
+    const {wallet, setWallet, initialState} = useContext(WalletContext);
+    const [provider, setProvider] = useState<any>(null);  
+    const [address, setAddress] = useState<string>(''); 
 
     const [isConnecting, setIsConnecting] = useState(false); 
     const [error, setError] = useState(false); 
@@ -24,51 +27,47 @@ const Navbar = (props: any):any => {
     const errorProps:ModalProps = {errorMessage: errorMessage, onClose: () => setError(false), isOpen: true}
     useEffect(() => {
 
-        const refreshAccounts = (accounts: any) => {
-            if(accounts.length > 0) {
-                updateWallet(accounts); 
-            } else {
+        const refreshAccounts = (accounts: string[]) => {
+            if(accounts.length < 1) {
+                console.log('I should go here')
                 setWallet(initialState); 
+                setAddress(''); 
             }
         }
         const getProvider = async () => {
-            const provider = await detectEthereumProvider({silent: true}); 
-            console.log(provider); 
-            setHasProvider(Boolean(provider)); 
+            const _provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+            setHasProvider(Boolean(_provider)); 
+            setProvider(_provider); 
 
-            if(provider) {
-                const accounts = await window.ethereum.request({
-                    method: 'eth_accounts'
-                })
-                refreshAccounts(accounts);
-                window.ethereum.on('accountsChanged', refreshAccounts);  
+            if(_provider) {
+                const accounts = await window.ethereum.request(
+                    { method: 'eth_accounts' }
+                  );
+                refreshAccounts(accounts); 
+                window.ethereum.on('accountsChanged', refreshAccounts) 
             }
         }
-        
-        getProvider();
-        return () => {
-            window.ethereum?.removeListener('accountsChanged', refreshAccounts); 
-        } 
-    }, []); 
 
-    const updateWallet = async (accounts: any) => {
-        setWallet({accounts}); 
-    }
+        getProvider();
+    }, [wallet]); 
 
     const handleConnect = async () => {
         setIsConnecting(true); 
-        let accounts = await window.ethereum.request({
-            method: "eth_requestAccounts"
-        })
-        .then((accounts:[]) => {
-            setError(false); 
-            updateWallet(accounts); 
-        })
-        .catch((err: any) => {
-            setError(true); 
-            setErrorMessage(err.message); 
-        }); 
-        setIsConnecting(false); 
+        // prompts for connection
+        if(provider) {
+            await provider.send("eth_requestAccounts", [])
+            .then(async () => {
+                setError(false); 
+                const signer = await provider.getSigner(); 
+                setWallet(signer); 
+                setAddress(await signer.getAddress())
+            })
+            .catch((err: any) => {
+                setError(true); 
+                setErrorMessage(err.message); 
+            }); 
+            setIsConnecting(false); 
+        }
     }
 
     const disableConnect = Boolean(wallet) && isConnecting
@@ -78,11 +77,11 @@ const Navbar = (props: any):any => {
                 <ul className="navbarList">
                     <li className="navbarListElement"><Image src={mandaLogo} width="90" alt="Logo"></Image></li>
                     {
-                    hasProvider && wallet.accounts.length < 1 &&
-                        <li className='navbarListElement'><Button disabled={disableConnect} onClick={handleConnect}>Connect Metamask</Button></li>
+                    hasProvider && (wallet === initialState) &&
+                        <li className='navbarListElement'><Button backgroundColor='#3D0ACE' color='white' disabled={disableConnect} onClick={handleConnect}>Connect Metamask</Button></li>
                     }
-                    { wallet.accounts.length > 0 && 
-                            <li className='navbarListElement'>{wallet.accounts[0]}</li>
+                    { wallet && 
+                            <li className='navbarListElement'>{address}</li>
                     }
                 </ul>
                 {error && <ErrorModal errorMessage={errorProps.errorMessage} onClose={errorProps.onClose} isOpen={errorProps.isOpen}></ErrorModal>}  

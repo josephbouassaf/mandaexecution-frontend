@@ -10,16 +10,31 @@ import {
     TableContainer,
     Button,
   } from '@chakra-ui/react'
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import SwapDetails from '../SwapDetails';
+import {VaultsContext} from '../../../context/vaults'
+import { Vault } from 'intu-sdk/lib/src/models/models';
+import { WalletContext } from '@/app/context/wallet';
 
 const SwapRequests = () => {
 
     const [isOpen, setIsOpen] = useState(false); 
+    const {vaults} = useContext(VaultsContext); 
+    const {wallet} = useContext(WalletContext); 
+    const [currVault, setCurrVault] = useState<Vault|null>(null); 
+
+    const handleViewDetails = (vault:Vault) => {
+        setCurrVault(vault); 
+        setIsOpen(true);
+    }
+
+    useEffect(() => {
+        console.log(vaults); 
+    },[vaults, wallet]); 
 
     return (
         <div>
-            <SwapDetails isOpen={isOpen} onClose={() => setIsOpen(false)}></SwapDetails>
+            <SwapDetails isOpen={isOpen} onClose={() => setIsOpen(false)} vault={currVault}></SwapDetails>
             <TableContainer boxShadow="xl" marginBottom={'20px'}>
                 <Table variant='simple'>
                     <TableCaption>Swap Requests</TableCaption>
@@ -33,27 +48,16 @@ const SwapRequests = () => {
                         </Tr>
                     </Thead>
                     <Tbody>
-                        <Tr>
-                            <Td textAlign='center'>ETH-BTC</Td>
-                            <Td textAlign='center'>0x0827392739137293729</Td>
-                            <Td textAlign='center'>0x0827392739137293729</Td>
-                            <Td textAlign='center'><Button disabled variant='ghost' color='green.400'>Processed</Button></Td>
-                            <Td textAlign='center'><Button onClick={() => setIsOpen(true)}>View Details</Button></Td>
+                      {vaults.map((vault:Vault,idx:number) => {
+                        return <Tr key={idx}>
+                            <Td textAlign='center'>FEI-RARI</Td>
+                            <Td textAlign='center'>{vault.users[0].address.substring(0,10)+'...'}</Td>
+                            <Td textAlign='center'>{vault.users[1].address.substring(0,10)+'...'}</Td>
+                            <Td textAlign='center'><Button disabled variant='ghost' color='yellow.400'>In Progress</Button></Td>
+                            <Td textAlign='center'><Button onClick={() => handleViewDetails(vault)}>View Details</Button>
+                            </Td>
                         </Tr>
-                        <Tr>
-                        <Td textAlign='center'>ETH-BTC</Td>
-                            <Td textAlign='center'>0x0827392739137293729</Td>
-                            <Td textAlign='center'>0x0827392739137293729</Td>
-                            <Td textAlign='center'><Button disabled variant='ghost' color='green.400'>Processed</Button></Td>
-                            <Td textAlign='center'><Button backgroundColor='#3D0ACE' color='white' id="testAnchor" onClick={() => setIsOpen(true)}>View Details</Button></Td>
-                        </Tr>
-                        <Tr>
-                        <Td textAlign='center'>ETH-BTC</Td>
-                            <Td textAlign='center'>0x0827392739137293729</Td>
-                            <Td textAlign='center'>0x0827392739137293729</Td>
-                            <Td textAlign='center'><Button disabled variant='ghost' color='red.400'>Cancelled</Button></Td>
-                            <Td textAlign='center'><Button onClick={() => setIsOpen(true)}>View Details</Button></Td>
-                        </Tr>
+                        })}  
                     </Tbody>
                 </Table>    
         </TableContainer>
