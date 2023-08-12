@@ -6,37 +6,44 @@ import { Card,
     Text,
     Stack,
     Input,
+    Flex,
+    InputLeftElement,
+    InputGroup,
+    Icon,
 } from '@chakra-ui/react'
 
-import {TriangleDownIcon} from "@chakra-ui/icons"
 import { useContext, useState } from 'react';
 import { WalletContext } from '@/app/context/wallet';
-import { getUserVaults, instantiateVault, preRegisterUser } from '@/app/functions/intu/intu';
+import { instantiateVault, preRegisterUser } from '@/app/functions/intu/intu';
 import { ModalProps } from '../../common/ErrorModal/type';
 import ErrorModal from '../../common/ErrorModal';
 import { VaultsContext } from '@/app/context/vaults';
+import {GiTwoCoins, GiFruitBowl} from 'react-icons/gi'; 
+import { RiSwapFill } from 'react-icons/ri';
+import { AiOutlineSwap } from 'react-icons/ai';
+import {FaHandshake} from 'react-icons/fa';
+import { Vault } from "intu-sdk/lib/src/models/models";
+import { isAddress } from 'ethers/lib/utils';
 
 const CreateSwap = () => {
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [creationComplete, setCreationComplete] = useState(false); 
-    const [counterparty,setCounterparty] = useState<string|null>(null)
-    const [errorMessage, setErrorMessage] = useState<string>('');  
+    const [isLoading, setIsLoading] = useState(false); 
+    const [counterparty,setCounterparty] = useState<string|null>(null);
+    const [addressInvalid, setAddressInvalid] = useState<boolean>(false); 
+    const [errorMessage, setErrorMessage] = useState<string|null>(null);  
     const {wallet} = useContext(WalletContext); 
-    const {fetchVaults} = useContext(VaultsContext); 
+    const {fetchVaults, vaults} = useContext(VaultsContext); 
 
-    const errorProps:ModalProps = {errorMessage: errorMessage, onClose: () => setErrorMessage(''), isOpen: true}
+    const errorProps:ModalProps = {errorMessage: errorMessage, onClose: () => setErrorMessage(null), isOpen: true}
 
     const handleCounterpartyChange = (e:any) => {
-        setCounterparty(e.target.value); 
-    }
-
-    
-    const handleArrowClick = () => {
-        // redirect to swap requests table
-        setCreationComplete(false);
-        // set the redirect state to true so that the newly added swap is highlighted
-        
+        const address = e.target.value; 
+        if(isAddress(address)) {
+            setCounterparty(e.target.value);
+            setAddressInvalid(false); 
+        } else {
+            setAddressInvalid(true); 
+        }
     }
 
     const handleCreateRequest = async () => {
@@ -44,49 +51,70 @@ const CreateSwap = () => {
 
         const address = await wallet.getAddress(); 
         const participants = [address, counterparty]; 
-        // api call 
+        // api call to instantiate the vault
         await instantiateVault(wallet,participants)
+        .then(() => {
+            setIsLoading(false);
+        })
         .catch((err) => {
             setIsLoading(false);
-            setErrorMessage(err.message); 
+            setErrorMessage(err.message);  
         })
-        
-        const func = async () => {
-            const vaults = (await getUserVaults(address));
-     
-            await preRegisterUser(vaults[vaults.length-1].vaultAddress, wallet)
-            .then(() => {
-                setIsLoading(false);
-                setCreationComplete(true); 
-            })
-            .catch((err) => {
-                setIsLoading(false);
-                setErrorMessage(err.message); 
-            })
-        }
-
-        setTimeout(func,1000); 
-        // trigger vaults refetch
-        await fetchVaults(); 
     }
 
     return (
         <div>
             {errorMessage && <ErrorModal errorMessage={errorProps.errorMessage} onClose={errorProps.onClose} isOpen={errorProps.isOpen}></ErrorModal>}  
-            <Card backgroundColor='#010D50' width="100%" align='center'>
+            <Card bgGradient="radial(blue.400, blue.600, blue.500)" width="100%" align='center'>
                 <CardHeader>
                     <Text fontWeight={'bold'} color={'white'} fontSize={'36px'}>Create Your Own Swaps With Manda</Text>
                 </CardHeader>
                 <CardBody>
                 <Stack spacing={4}>
-                        <Input backgroundColor={'white'} borderWidth='2px' placeholder="I have 0x..." ></Input>
-                        <Input backgroundColor={'white'} borderWidth='2px' placeholder="I want 0x..." ></Input>
-                        <Input onChange={handleCounterpartyChange} backgroundColor={'white'} borderWidth='2px' placeholder="I want to trade with 0x.." ></Input>
+                    <Flex flexDirection={'row'}justifyContent={'space-between'}>
+                        <InputGroup>
+                            <Input backgroundColor={'white'} borderWidth='2px' placeholder="I have 0x..." >
+                            </Input>
+                            <InputLeftElement>
+                                <Icon as={GiTwoCoins}></Icon>
+                            </InputLeftElement>
+                        </InputGroup>
+                        <InputGroup>
+                        <Input marginLeft={'10px'} backgroundColor={'white'} borderWidth='2px' placeholder="Amount" >
+                            </Input>
+                            <InputLeftElement>
+                                <Icon marginLeft={'15px'} as={GiFruitBowl}></Icon>
+                            </InputLeftElement>
+                        </InputGroup>
+                    </Flex>
+                    <Icon alignSelf='center' color={'white'} boxSize={7} as={RiSwapFill}></Icon>
+                    <Flex flexDirection={'row'}justifyContent={'space-between'}>
+                        <InputGroup>
+                            <Input backgroundColor={'white'} borderWidth='2px' placeholder="I want 0x..." >
+                            </Input>
+                            <InputLeftElement>
+                                <Icon as={GiTwoCoins}></Icon>
+                            </InputLeftElement>
+                        </InputGroup>
+                        <InputGroup>
+                        <Input marginLeft={'10px'} backgroundColor={'white'} borderWidth='2px' placeholder="Amount" >
+                            </Input>
+                            <InputLeftElement>
+                                <Icon marginLeft={'15px'} as={GiFruitBowl}></Icon>
+                            </InputLeftElement>
+                        </InputGroup>
+                    </Flex>
+                    <Icon alignSelf='center' color={'white'} boxSize={7} as={AiOutlineSwap}></Icon>
+                    <InputGroup>
+                        <Input isInvalid={addressInvalid} onChange={handleCounterpartyChange} backgroundColor={'white'} borderWidth='2px' placeholder="I want to trade with 0x.." ></Input>
+                        <InputLeftElement>
+                            <Icon marginLeft={'10px'} as={FaHandshake}></Icon>
+                        </InputLeftElement>
+                    </InputGroup>
                 </Stack>
                 </CardBody>
                 <CardFooter>
-                    {!creationComplete ? <Button backgroundColor='#3D0ACE' onClick={handleCreateRequest} isLoading={isLoading} loadingText="Submitting Request" colorScheme='blue'>Create Swap Request</Button>
-                    : <a href='#testAnchor'><Button onClick={handleArrowClick}><TriangleDownIcon></TriangleDownIcon></Button></a>}
+                    <Button backgroundColor='#3D0ACE' onClick={handleCreateRequest} isLoading={isLoading} loadingText="Submitting Request" colorScheme='blue'>Create Swap Request</Button>
                 </CardFooter>
             </Card>
         </div>

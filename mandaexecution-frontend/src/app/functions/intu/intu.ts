@@ -1,4 +1,4 @@
-import { Signer, ethers } from "ethers";
+import { Signer } from "ethers";
 import { 
     vaultCreation, 
     preRegistration, 
@@ -9,19 +9,24 @@ import {
     signTx,
     combineSignedTx
 } from "intu-sdk/lib/src/services";
-import {getVaults, proposeTransaction} from "intu-sdk/lib/src/services/web3"
+import {getVaults, 
+    proposeTransaction
+} from "intu-sdk/lib/src/services/web3"
 import {
     getUserPreRegisterInfos,
     getUserStep1Infos,
     getUserStep2Infos,
     getUserStep3Infos
 } from "intu-sdk/lib/src/services/web3/utils"
-import { formTransaction } from "intu-sdk/lib/src/services/cryptography";
-
-import {provider} from '../ethereum/ethereum'
-import { PreRegistrationStep, RegistrationStep1, RegistrationStep2, RegistrationStep3, Vault } from "intu-sdk/lib/src/models/models";
+import { provider} from '../ethereum/ethereum'
+import { Vault } from "intu-sdk/lib/src/models/models";
 import { hasAllowance } from "../ethereum/contracts/functions";
-import { FEI_TOKEN_ADDRESS, RARI_TOKEN_ADDRESS } from "../constants";
+import { 
+    ExecutionState,
+    FEI_TOKEN_ADDRESS, 
+    RARI_TOKEN_ADDRESS, 
+    RegistrationState
+} from "../constants";
 
 /**
  * returns all vaults for a given user
@@ -97,6 +102,30 @@ export async function isUserRegisteredStep3(vaultAddress:string, signerAddress:s
     .catch((err) => false); 
 }
 
+export async function getUserStatus(swapState:string, vaultAddress:string,signerAddress:string) {
+    let userStatus = false; 
+    if(swapState === RegistrationState.PreRegistration) {
+        userStatus = await isUserPreregistered(vaultAddress,signerAddress);
+    } 
+    else if(swapState === RegistrationState.StepOne) {
+        userStatus = await isUserRegisteredStep1(vaultAddress,signerAddress);
+    } 
+    else if (swapState === RegistrationState.StepTwo) {
+        userStatus = await isUserRegisteredStep2(vaultAddress,signerAddress);
+    } 
+    else if (swapState === RegistrationState.StepThree) {
+        userStatus = await isUserRegisteredStep3(vaultAddress,signerAddress);
+    } else if (swapState === RegistrationState.Confirmation) { // at confirmation
+            // do nothing
+    } else {
+        //TODO: set error Message
+        console.log('I get here because there is an error'); 
+        return;
+    }
+    // TODO: add post registration user statuses. 
+    return userStatus; 
+}
+
 export async function hasUserSigned(vault:Vault, txId:number, signerAddress:string) {
     const tx = vault.transactions.find(tx => tx.id === txId); 
     if(tx) {
@@ -106,46 +135,62 @@ export async function hasUserSigned(vault:Vault, txId:number, signerAddress:stri
     return false; 
 }
 
-export async function getRegistrationState(vault:Vault) {
-    let users = vault.users;
-    
-    for(let i = 0; i < users.length;i++) {
-       const result = await isUserPreregistered(vault.vaultAddress,vault.users[i].address); 
-        if(result === false) {
-            return 'at-pre-registration';
-        }
+export async function getPostRegState(vault:Vault) {
+    if(!haveUsersFunded(vault)) {
+        return 'at-funding'; 
+    }
+     
+    if(!haveUsersSigned(vault)) {
+        return 'at-signing'
     }
 
-    for(let i = 0; i < users.length;i++) {
-        const result = await isUserRegisteredStep1(vault.vaultAddress,vault.users[i].address); 
-         if(result === false) {
-             return 'at-registration-step1';
+    return 'at-combining'
+}
 
-         }
-     }
-    
-    for(let i = 0; i < users.length;i++) {
-        const result = await isUserRegisteredStep2(vault.vaultAddress,vault.users[i].address); 
-         if(result === false) {
-             return 'at-registration-step2';
-         }
-     }
-
-     for(let i = 0; i < users.length;i++) {
-        const result = await isUserRegisteredStep3(vault.vaultAddress,vault.users[i].address); 
-         if(result === false) {
-             return 'at-registration-step3';
-         }
-     }
-
+export async function getSwapState(vault:Vault) {
+    // check if vault registration is complete
     if(vault.masterPublicAddress) {
-        return 'registration-complete'; 
+        const postRegistrationState = await getPostRegState(vault);
+        return postRegistrationState; 
     } else {
-        return 'complete-registration'
+         
+        let users = vault.users;
+        for(let i = 0; i < users.length;i++) {
+        const result = await isUserPreregistered(vault.vaultAddress,vault.users[i].address); 
+            if(result === false) {
+                return RegistrationState.PreRegistration;
+            }
+        }
+
+        for(let i = 0; i < users.length;i++) {
+            const result = await isUserRegisteredStep1(vault.vaultAddress,vault.users[i].address); 
+            if(result === false) {
+                return RegistrationState.StepOne;
+
+            }
+        }
+        
+        for(let i = 0; i < users.length;i++) {
+            const result = await isUserRegisteredStep2(vault.vaultAddress,vault.users[i].address); 
+            if(result === false) {
+                return RegistrationState.StepTwo;
+            }
+        }
+
+        for(let i = 0; i < users.length;i++) {
+            const result = await isUserRegisteredStep3(vault.vaultAddress,vault.users[i].address); 
+            if(result === false) {
+                return RegistrationState.StepThree;
+            }
+        }
+        // is all registration steps have been completed, 
+        //but the public key has not been created yet, 
+        //then the vault needs to be completed
+        return RegistrationState.Confirmation
     }
 }
 
-export async function haveUsersFunded(vault:Vault) {
+export async function haveUsersFundedSwap(vault:Vault) {
     let fundingState = false; 
     if(vault.masterPublicAddress) {
         fundingState = (await hasAllowance(FEI_TOKEN_ADDRESS,vault.masterPublicAddress,vault.users[0].address)) || (await hasAllowance(RARI_TOKEN_ADDRESS,vault.masterPublicAddress,vault.users[0].address));
@@ -154,21 +199,10 @@ export async function haveUsersFunded(vault:Vault) {
     return fundingState; 
 }
 
-export async function haveUsersSigned(vault:Vault) {
+export async function haveUsersSignedSwap(vault:Vault) {
    let signingState = false; 
    signingState =  (await hasUserSigned(vault,vault.transactions[-1].id,vault.users[0].address)) && (await hasUserSigned(vault,vault.transactions[-2].id,vault.users[0].address));
    signingState =  (await hasUserSigned(vault,vault.transactions[-1].id,vault.users[1].address)) && (await hasUserSigned(vault,vault.transactions[-2].id,vault.users[1].address));
-}
-
-export async function getPostRegState(vault:Vault) {
-    if(!haveUsersFunded(vault)) {
-        return 'at-funding'; 
-    } 
-    if(!haveUsersSigned(vault)) {
-        return 'at-signing'
-    }
-
-    return 'at-combining'
 }
 
 /**
