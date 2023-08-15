@@ -1,6 +1,7 @@
 'use client'
 import { 
     Box, 
+    Container, 
     Flex, 
     Text 
 } from "@chakra-ui/react";
@@ -8,11 +9,14 @@ import {
 const Footer = () => {
 
     return (
-        <Box boxShadow={"xl"} w='100%'>
-           <Flex gap='2rem' justifyContent={'space-between'}>
-                <Text marginLeft={'15px'}> &copy; Manda Labs</Text>
-           </Flex>
-        </Box>
+        <Flex gap='2rem' flexDirection={'column'}>
+            <Container w={'100vw'} justifyContent={'center'}>
+                <Text marginTop={'4vh'} textAlign={'center'}>Describe your operation with words, we take care of the rest</Text>
+            </Container>
+            <Container margin={0} w={'100vw'} alignItems={'flex-start'}>
+                <Text> &copy; Manda Labs</Text>
+            </Container>
+        </Flex>
     ); 
 }
 

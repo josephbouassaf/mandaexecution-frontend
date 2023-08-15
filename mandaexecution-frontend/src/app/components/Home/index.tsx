@@ -17,7 +17,7 @@ const Services = () => {
                     <Text fontSize={'42px'} fontWeight={'extrabold'} textAlign={'center'}>
                         Welcome to Manda
                     </Text>
-                    <Text fontWeight={'bold'} fontSize={'24px'} textAlign={'center'}>Create a secure execution environment for your business operation, and execute it later</Text>
+                    <Text fontWeight={'bold'} fontSize={'24px'} textAlign={'center'}>Architect your business operation, execute it later</Text>
                 </Flex>
             </section>
             <section>
