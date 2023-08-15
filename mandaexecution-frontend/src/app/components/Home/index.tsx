@@ -8,6 +8,7 @@ import {TbPacman} from "react-icons/tb";
 import {PiContactlessPaymentBold} from "react-icons/pi";
 import {TbUsersGroup} from "react-icons/tb"; 
 import {GiReceiveMoney} from "react-icons/gi"; 
+import {AiOutlineSchedule} from "react-icons/ai"
 
 const Services = () => {
     return (
@@ -39,7 +40,7 @@ const Services = () => {
                         actionButtonText="Merge!"/>
                         <ServiceCard
                         title="DAO2DAO Acquisitions"
-                        description=""
+                        description="Plan & Execute DAO2DAO Acquisition operations. Increase your reach, become an unforkable moat."
                         link=""
                         buttonIcon={TbPacman}
                         additionalText='Coming Soon!'
@@ -53,6 +54,13 @@ const Services = () => {
                         buttonIcon={PiContactlessPaymentBold}
                         additionalText='Coming Soon!'
                         actionButtonText="Pay!"/>
+                        <ServiceCard
+                        title="Vesting Contract"
+                        description="Set up a vesting schedule to be released to 3rd party"
+                        link=""
+                        buttonIcon={AiOutlineSchedule}
+                        additionalText='Coming Soon!'
+                        actionButtonText="Schedule!"/>
                     </ServicesRow>
                     <ServicesRow props={{title:'Service Contracts'}}>
                         <ServiceCard
