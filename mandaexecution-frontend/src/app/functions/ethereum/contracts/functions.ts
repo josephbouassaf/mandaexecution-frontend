@@ -24,14 +24,14 @@ export async function hasAllowance(contractAddress:string, userAddress:string,va
 }
 
 
-export async function proposeEmptyTransaction(contractAddress:string, from:string, to:string,amount:string, nonce:number) {
-    const contract = new ethers.Contract(contractAddress, Mytoken.abi,provider); 
-    const estimatedGasLimit = await contract.estimateGas.transferFrom(from,to,amount); // approves 1 USDT
-    const approveTxUnsigned = await contract.populateTransaction.transferFrom(from,to,amount);
-    approveTxUnsigned.chainId = (await provider.getNetwork()).chainId; // chainId 1 for Ethereum mainnet
-    approveTxUnsigned.gasLimit = estimatedGasLimit;
-    approveTxUnsigned.gasPrice = await provider.getGasPrice();
-    approveTxUnsigned.nonce = nonce;
+export async function proposeEmptySwapTransaction(contractAddress:string, from:string, to:string,amount:string, nonce:number) {
+    const contract = new ethers.Contract(contractAddress, Mytoken.abi,provider); // TODO: replace with swap contrat abi
+    const estimatedGasLimit = await contract.estimateGas.transferFrom(from,to,amount); // TODO: replace with SC swap function
+    const swapTxUnsigned = await contract.populateTransaction.transferFrom(from,to,amount);
+    swapTxUnsigned.chainId = (await provider.getNetwork()).chainId; // chainId 1 for Ethereum mainnet
+    swapTxUnsigned.gasLimit = estimatedGasLimit;
+    swapTxUnsigned.gasPrice = await provider.getGasPrice();
+    swapTxUnsigned.nonce = nonce;
 
-    return approveTxUnsigned; 
+    return swapTxUnsigned.data;
 }

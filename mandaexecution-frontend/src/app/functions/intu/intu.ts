@@ -1,4 +1,4 @@
-import { Signer } from "ethers";
+import { ContractTransaction, Signer } from "ethers";
 import { 
     vaultCreation, 
     preRegistration, 
@@ -22,10 +22,9 @@ import { provider} from '../ethereum/ethereum'
 import { Vault } from "intu-sdk/lib/src/models/models";
 import { hasAllowance } from "../ethereum/contracts/functions";
 import { 
-    ExecutionState,
     FEI_TOKEN_ADDRESS, 
-    RARI_TOKEN_ADDRESS, 
-    RegistrationState
+    RARI_TOKEN_ADDRESS,
+    SwapState
 } from "../constants";
 
 /**
@@ -46,8 +45,8 @@ export async function getUserVaults(signerAddress:string) {
  */
 export async function instantiateVault(signer: Signer,participants: string[]) {
     const vaultName = "newVault-"+ Math.ceil(100000*Math.random());
-    // create the vault
-    await vaultCreation(participants, vaultName, 99,99,99,signer)  
+    const tx:ContractTransaction = await vaultCreation(participants, vaultName, 99,99,99,signer); 
+    await tx.wait(); 
 };
 
 /**
@@ -56,7 +55,8 @@ export async function instantiateVault(signer: Signer,participants: string[]) {
  * @param signer 
  */
 export async function preRegisterUser(vaultAddress: string, signer: Signer) {
-    await preRegistration(vaultAddress, signer);
+    const tx:ContractTransaction = await preRegistration(vaultAddress, signer);
+    await tx.wait(); 
 }
 
 /**
@@ -65,14 +65,21 @@ export async function preRegisterUser(vaultAddress: string, signer: Signer) {
  * @param signer 
  */
 export async function registerUser(vaultAddress:string, signer: Signer, step:number) {
-    if(step === 1)
-        await registerStep1(vaultAddress, signer);
-    if(step === 2) 
-        await registerStep2(vaultAddress, signer);
+    if(step === 1) {
+        const tx:ContractTransaction = await registerStep1(vaultAddress, signer);
+        await tx.wait(); 
+    }
+    if(step === 2) {
+        const tx:ContractTransaction = await registerStep2(vaultAddress, signer);
+        await tx.wait();
+    }
     if(step === 3) {
-        await registerStep3(vaultAddress, signer); 
+        const tx:ContractTransaction = await registerStep3(vaultAddress, signer); 
+        await tx.wait();
     }
 }
+     
+
 
 export async function completeVaultRegistration(vaultAddress: string, signer: Signer) {
     await completeVault(vaultAddress, signer);
@@ -102,31 +109,34 @@ export async function isUserRegisteredStep3(vaultAddress:string, signerAddress:s
     .catch((err) => false); 
 }
 
-export async function getUserStatus(swapState:string, vaultAddress:string,signerAddress:string) {
-    let userStatus = false; 
-    if(swapState === RegistrationState.PreRegistration) {
-        userStatus = await isUserPreregistered(vaultAddress,signerAddress);
-    } 
-    else if(swapState === RegistrationState.StepOne) {
-        userStatus = await isUserRegisteredStep1(vaultAddress,signerAddress);
-    } 
-    else if (swapState === RegistrationState.StepTwo) {
-        userStatus = await isUserRegisteredStep2(vaultAddress,signerAddress);
-    } 
-    else if (swapState === RegistrationState.StepThree) {
-        userStatus = await isUserRegisteredStep3(vaultAddress,signerAddress);
-    } else if (swapState === RegistrationState.Confirmation) { // at confirmation
-            // do nothing
+export async function areAllUsersRegistered(vault:Vault):Promise<boolean> {
+    let areUsersRegistered = false; 
+    for(var i = 0; i < vault.users.length; i++)
+        areUsersRegistered = await isUserRegisteredStep3(vault.vaultAddress, vault.users[i].address); 
+    return areUsersRegistered; 
+}
+
+export async function getUserStatus(swapState:string, vault:Vault,signerAddress:string) {
+    let userStatus = true; 
+    if(swapState === SwapState.PreRegistration) {
+        userStatus = await isUserPreregistered(vault.vaultAddress,signerAddress);
+    } else if(swapState === SwapState.StepOne) {
+        userStatus = await isUserRegisteredStep1(vault.vaultAddress,signerAddress);
+    } else if (swapState === SwapState.StepTwo) {
+        userStatus = await isUserRegisteredStep2(vault.vaultAddress,signerAddress);
+    } else if (swapState === SwapState.StepThree) {
+        userStatus = await isUserRegisteredStep3(vault.vaultAddress,signerAddress);
+    } else if (swapState === SwapState.Funding) {
+        userStatus = await hasUserFundedSwap(vault,signerAddress); 
+    } else if (swapState === SwapState.Signing) { 
+        userStatus = await hasUserSignedSwap(vault,signerAddress); 
     } else {
-        //TODO: set error Message
-        console.log('I get here because there is an error'); 
-        return;
+        return userStatus; // i.e. if done or unexpected state => do nothing
     }
-    // TODO: add post registration user statuses. 
     return userStatus; 
 }
 
-export async function hasUserSigned(vault:Vault, txId:number, signerAddress:string) {
+function hasUserSigned(vault:Vault, txId:number, signerAddress:string) {
     const tx = vault.transactions.find(tx => tx.id === txId); 
     if(tx) {
         const userSignedTx = tx?.userSignedTransactions.find(userTx => userTx.address === signerAddress); 
@@ -136,15 +146,15 @@ export async function hasUserSigned(vault:Vault, txId:number, signerAddress:stri
 }
 
 export async function getPostRegState(vault:Vault) {
-    if(!haveUsersFunded(vault)) {
-        return 'at-funding'; 
+    if(!haveUsersFundedSwap(vault)) {
+        return SwapState.Funding; 
     }
      
-    if(!haveUsersSigned(vault)) {
-        return 'at-signing'
+    if(!haveUsersSignedSwap(vault)) {
+        return SwapState.Signing; 
     }
 
-    return 'at-combining'
+    return SwapState.Executed;
 }
 
 export async function getSwapState(vault:Vault) {
@@ -157,52 +167,80 @@ export async function getSwapState(vault:Vault) {
         let users = vault.users;
         for(let i = 0; i < users.length;i++) {
         const result = await isUserPreregistered(vault.vaultAddress,vault.users[i].address); 
-            if(result === false) {
-                return RegistrationState.PreRegistration;
+            if(!result) {
+                return SwapState.PreRegistration;
             }
         }
 
         for(let i = 0; i < users.length;i++) {
             const result = await isUserRegisteredStep1(vault.vaultAddress,vault.users[i].address); 
-            if(result === false) {
-                return RegistrationState.StepOne;
-
+            if(!result) {
+                return SwapState.StepOne;
             }
         }
         
         for(let i = 0; i < users.length;i++) {
             const result = await isUserRegisteredStep2(vault.vaultAddress,vault.users[i].address); 
-            if(result === false) {
-                return RegistrationState.StepTwo;
+            if(!result) {
+                return SwapState.StepTwo;
             }
         }
 
         for(let i = 0; i < users.length;i++) {
             const result = await isUserRegisteredStep3(vault.vaultAddress,vault.users[i].address); 
-            if(result === false) {
-                return RegistrationState.StepThree;
+            if(!result) {
+                return SwapState.StepThree;
             }
         }
-        // is all registration steps have been completed, 
-        //but the public key has not been created yet, 
-        //then the vault needs to be completed
-        return RegistrationState.Confirmation
+        return SwapState.Unexpected;
     }
 }
 
+/**
+ * returns true if the swap has been funded by the calling user, otherwise returns false
+ * @param vault 
+ * @returns 
+ */
+export async function hasUserFundedSwap(vault:Vault, signerAddress: string) {
+    let fundingState = false; 
+    if(vault.masterPublicAddress)
+        fundingState = (await hasAllowance(FEI_TOKEN_ADDRESS,vault.masterPublicAddress,signerAddress)) || (await hasAllowance(RARI_TOKEN_ADDRESS,vault.masterPublicAddress,signerAddress));
+    return fundingState; 
+}
+
+/**
+ * returns true if the swap has been funded, otherwise returns false
+ * @param vault 
+ * @returns 
+ */
 export async function haveUsersFundedSwap(vault:Vault) {
     let fundingState = false; 
     if(vault.masterPublicAddress) {
-        fundingState = (await hasAllowance(FEI_TOKEN_ADDRESS,vault.masterPublicAddress,vault.users[0].address)) || (await hasAllowance(RARI_TOKEN_ADDRESS,vault.masterPublicAddress,vault.users[0].address));
-        fundingState = (await hasAllowance(FEI_TOKEN_ADDRESS,vault.masterPublicAddress,vault.users[1].address)) || (await hasAllowance(RARI_TOKEN_ADDRESS,vault.masterPublicAddress,vault.users[1].address));
+        for(var i = 0; i<vault.users.length; i++)
+            fundingState = (await hasAllowance(FEI_TOKEN_ADDRESS,vault.masterPublicAddress,vault.users[i].address)) || (await hasAllowance(RARI_TOKEN_ADDRESS,vault.masterPublicAddress,vault.users[i].address));
     }
     return fundingState; 
 }
 
+/**
+ * returns true if the swap transaction has been signed by the calling user, returns false otherwise
+ * @param vault 
+ */
+export async function hasUserSignedSwap(vault:Vault, signerAddress:string) {
+    let signingState = false; 
+    signingState =  (await hasUserSigned(vault,vault.transactions[-1].id,signerAddress)); 
+    return signingState; 
+}
+
+/**
+ * returns true if the swap transaction has been signed, returns false otherwise
+ * @param vault 
+ */
 export async function haveUsersSignedSwap(vault:Vault) {
-   let signingState = false; 
-   signingState =  (await hasUserSigned(vault,vault.transactions[-1].id,vault.users[0].address)) && (await hasUserSigned(vault,vault.transactions[-2].id,vault.users[0].address));
-   signingState =  (await hasUserSigned(vault,vault.transactions[-1].id,vault.users[1].address)) && (await hasUserSigned(vault,vault.transactions[-2].id,vault.users[1].address));
+    let signingState = false; 
+    for(var i = 0; i<vault.users.length; i++)
+        signingState =  (await hasUserSigned(vault,vault.transactions[-1].id,vault.users[i].address)); 
+    return signingState; 
 }
 
 /**
@@ -214,11 +252,22 @@ export async function haveUsersSignedSwap(vault:Vault) {
 export async function postTransaction(signer: Signer, vaultAddress:string, emptyTx:string) {
     await proposeTransaction(vaultAddress, emptyTx,signer); 
 }
-
+/**
+ * sign a transaction with signer's private key
+ * @param signer 
+ * @param txId 
+ * @param vaultAddress 
+ */
 export async function signTransaction(signer:Signer, txId:number, vaultAddress:string) {
     await signTx(vaultAddress,txId,signer); 
 }
 
+/**
+ * combine signatures to broadcast transaction on the network
+ * @param signer 
+ * @param txId 
+ * @param vaultAddress 
+ */
 export async function combineSignatures(signer:Signer, txId:number, vaultAddress:string) {
     await combineSignedTx(vaultAddress,txId,signer); 
 }

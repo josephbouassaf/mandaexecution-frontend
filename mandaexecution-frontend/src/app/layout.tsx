@@ -3,6 +3,8 @@ import Footer from './components/common/Footer'
 import { Providers } from './providers'
 import Navbar from './components/common/Navbar'
 
+import "@fontsource/space-grotesk";
+
 export default function RootLayout({
   children,
 }: {
@@ -10,12 +12,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body style={{fontFamily:'Space Grotesk'}}>
         <Providers>
           <Navbar>
           </Navbar>
           {children}
-          <Footer/>
         </Providers>
       </body>
     </html>

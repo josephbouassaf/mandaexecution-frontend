@@ -47,6 +47,7 @@ const SwapRequests = () => {
                     <TableCaption>Swap Requests</TableCaption>
                     <Thead>
                         <Tr>
+                            <Th textAlign='center'>Index</Th>
                             <Th textAlign='center'>Currency Pair</Th>
                             <Th textAlign='center'>Buyer</Th>
                             <Th textAlign='center'>Seller</Th>
@@ -57,6 +58,7 @@ const SwapRequests = () => {
                     <Tbody>
                       {vaults.map((vault:Vault,idx:number) => {
                         return <Tr key={idx}>
+                            <Td textAlign='center'>{idx}</Td>
                             <Td textAlign='center'>FEI-RARI</Td>
                             <Td textAlign='center'>{vault.users[0].address.substring(0,10)+'...'}</Td>
                             <Td textAlign='center'>{vault.users[1].address.substring(0,10)+'...'}</Td>

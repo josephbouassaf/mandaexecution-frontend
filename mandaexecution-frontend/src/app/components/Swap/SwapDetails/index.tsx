@@ -19,10 +19,11 @@ import {AiOutlineSwap} from 'react-icons/ai'
 import { useContext, useEffect, useState } from "react";
 import { Vault } from "intu-sdk/lib/src/models/models";
 import { WalletContext } from "@/app/context/wallet";
-import { combineSignatures, completeVaultRegistration, getPostRegState, getSwapState, getUserStatus, hasUserSigned, isUserPreregistered, isUserRegisteredStep1, isUserRegisteredStep2, isUserRegisteredStep3, preRegisterUser, registerUser, signTransaction } from "@/app/functions/intu/intu";
-import { approveVaultAsSpender, hasAllowance, proposeEmptyTransaction } from "@/app/functions/ethereum/contracts/functions";
-import { FEI_TOKEN_ADDRESS, RARI_TOKEN_ADDRESS, RegistrationState } from "@/app/functions/constants";
+import {getSwapState, getUserStatus } from "@/app/functions/intu/intu";
+import { FEI_TOKEN_ADDRESS, RARI_TOKEN_ADDRESS } from "@/app/functions/constants";
 import { getActionText, getNextAction, getProgressBarValue } from "@/app/functions/utils/utils";
+import ErrorModal from "../../common/ErrorModal";
+import { ModalProps } from '../../common/ErrorModal/type';
 
 interface SwapDetailsProps {
     isOpen: boolean,
@@ -40,15 +41,20 @@ const SwapDetails = ({
     const [swapState, setSwapState] = useState<string|undefined>(undefined); 
     const [userTurn, setUserTurn] = useState<boolean|undefined>(false);
     const [progressBarValue, setProgressBarValue] = useState(0); 
+    const [errorMessage, setErrorMessage] = useState<string|null>(null); 
 
     const {wallet} = useContext(WalletContext);
+
+    const errorProps:ModalProps = {errorMessage: errorMessage, onClose: () => setErrorMessage(null), isOpen: true}
+
 
     const refreshSwapState = async () => {
         if(vault) {
             // fetch states
             const address = await wallet.getAddress();  
             const swapState = await getSwapState(vault);
-            const userStatus = await getUserStatus(swapState,vault.vaultAddress,address);
+            const userStatus = await getUserStatus(swapState,vault,address);
+            console.log(userStatus);
             // refresh states
             setUserTurn(userStatus);
             setSwapState(swapState);
@@ -65,15 +71,20 @@ const SwapDetails = ({
             if(vault && swapState) {
                 setIsLoading(true);
                 const action = getNextAction(swapState, vault, wallet); 
-                if(action)
+                if(action) {
                     action()
-                    .then(() => setTimeout(refreshSwapState, 1500)); 
-                
+                    .then(() => refreshSwapState())
+                    .catch(err => {
+                        setErrorMessage(err.message);
+                        refreshSwapState();
+                    }); 
+                }
             }
         }
 
     return (
         <>
+        {errorMessage && <ErrorModal errorMessage={errorProps.errorMessage} onClose={errorProps.onClose} isOpen={errorProps.isOpen}></ErrorModal>}  
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay/>
             <ModalContent>
