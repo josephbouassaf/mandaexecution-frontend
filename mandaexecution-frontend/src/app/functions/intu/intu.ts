@@ -66,21 +66,16 @@ export async function preRegisterUser(vaultAddress: string, signer: Signer) {
  */
 export async function registerUser(vaultAddress:string, signer: Signer, step:number) {
     if(step === 1) {
-        const tx:ContractTransaction = await registerStep1(vaultAddress, signer);
-        await tx.wait(); 
+        await registerStep1(vaultAddress, signer); 
     }
     if(step === 2) {
-        const tx:ContractTransaction = await registerStep2(vaultAddress, signer);
-        await tx.wait();
+        await registerStep2(vaultAddress, signer);
     }
     if(step === 3) {
-        const tx:ContractTransaction = await registerStep3(vaultAddress, signer); 
-        await tx.wait();
+        await registerStep3(vaultAddress, signer); 
     }
 }
      
-
-
 export async function completeVaultRegistration(vaultAddress: string, signer: Signer) {
     await completeVault(vaultAddress, signer);
 }
