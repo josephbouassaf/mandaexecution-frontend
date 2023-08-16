@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Card, CardBody, CardFooter, Heading, Icon, Image, Stack, Text } from "@chakra-ui/react";
+import { Button, Card, CardBody, CardFooter, GridItem, Heading, Icon, Image, Stack, Text } from "@chakra-ui/react";
 import Link from "next/link";
 
 interface ServiceCardProps {
@@ -9,22 +9,27 @@ interface ServiceCardProps {
     link:string;
     buttonIcon?:any,
     additionalText?:string
+    size:number; 
+    index:number; 
 
 }
 const ServiceCard = (props: ServiceCardProps) => {
-    const {title,description, actionButtonText, buttonIcon, additionalText, link} = props; 
+    const {title,description, actionButtonText, buttonIcon, additionalText, size, index, link} = props; 
+
     return (
-        <>
             <Card
                 direction={{ base: 'column', sm: 'row' }}
                 overflow='hidden'
                 variant='elevated'
                 margin={'1vw'}
+                height={"100%"}
+                width={"100%"}
+                maxWidth={350}
             >
             <Stack>
                 <CardBody>
                     <Heading size='md'>{title}</Heading>
-                        <Text py='2'>
+                        <Text>
                             {description} 
                         </Text>
                 </CardBody>
@@ -38,7 +43,6 @@ const ServiceCard = (props: ServiceCardProps) => {
                 </CardFooter>
             </Stack>
         </Card>
-    </>
     );
 }
 

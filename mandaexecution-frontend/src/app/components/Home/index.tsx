@@ -14,18 +14,17 @@ import {AiOutlineSchedule} from "react-icons/ai"
 const Services = () => {
     return (
         <>
-            <section>
-                <Flex flexDirection={'column'} justifyContent={'center'}>
+                <Flex w={"100%"} flexDirection={'column'} justifyContent={'center'}>
                     <Text fontSize={'42px'} fontWeight={'extrabold'} textAlign={'center'}>
                         Welcome to Manda
                     </Text>
                     <Text fontWeight={'bold'} fontSize={'24px'} textAlign={'center'}>Architect your business operation, execute it later</Text>
                 </Flex>
-            </section>
-            <section>
-                <Container width={'100vw'} justifyContent={'center'}>
-                    <ServicesRow  props={{title:'Investment Contracts'}}>
+                <Flex w={'100%'} justifyContent={'center'} flexDirection={'column'}>
+                    <ServicesRow props={{title:'Investment Contracts'}}>
                         <ServiceCard
+                        size={3}
+                        index={0}
                         title="Asset Swap"
                         description="Swap any two sets of digital assets with our swap contract. Engage in treasury diversification, liquidity consolidation, and more with one or more counterparties. "
                         link=""
@@ -33,6 +32,8 @@ const Services = () => {
                         additionalText='Coming Soon!'
                         actionButtonText="Swap!"/>
                         <ServiceCard
+                        size={3}
+                        index={1}
                         title="DAO2DAO Mergers"
                         description="Plan & Execute DAO2DAO Merger operations. Merge your digital assets, communities, and more"
                         link=""
@@ -40,6 +41,8 @@ const Services = () => {
                         additionalText='Coming Soon!'
                         actionButtonText="Merge!"/>
                         <ServiceCard
+                        size={3}
+                        index={2}
                         title="DAO2DAO Acquisitions"
                         description="Plan & Execute DAO2DAO Acquisition operations. Increase your reach, become an unforkable moat."
                         link=""
@@ -49,13 +52,17 @@ const Services = () => {
                     </ServicesRow>
                     <ServicesRow props={{title:'Payment Contracts'}}>
                         <ServiceCard
+                        size={2}
+                        index={0}
                         title="Payment Contract"
                         description="Set up a future payment to a 3rd Party upon the conditions you set are met"
                         link=""
                         buttonIcon={PiContactlessPaymentBold}
                         additionalText='Coming Soon!'
                         actionButtonText="Pay!"/>
-                        <ServiceCard
+                        <ServiceCard 
+                        size={2}
+                        index={1}
                         title="Vesting Contract"
                         description="Set up a vesting schedule to be released to 3rd party"
                         link=""
@@ -65,6 +72,8 @@ const Services = () => {
                     </ServicesRow>
                     <ServicesRow props={{title:'Service Contracts'}}>
                         <ServiceCard
+                        size={1}
+                        index={0}
                         title="Service Contract"
                         description="Set up a Service Agreement Contract with a counterparty. Decide on the terms, reach them and collet your payment."
                         link=""
@@ -74,6 +83,8 @@ const Services = () => {
                     </ServicesRow>
                     <ServicesRow props={{title:'Governance'}}>
                         <ServiceCard
+                        size={1}
+                        index={0}
                         title="Price Discovery"
                         description="Use our innovative voting sytem, to agree on a price collectively"
                         link=""
@@ -81,8 +92,7 @@ const Services = () => {
                         additionalText='Coming Soon!'
                         actionButtonText="Negotiate!"/>
                     </ServicesRow>
-                </Container>
-            </section>
+                </Flex>
         </>
     ); 
 }
