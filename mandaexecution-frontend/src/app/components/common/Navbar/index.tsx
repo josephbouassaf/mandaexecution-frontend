@@ -74,7 +74,7 @@ const Navbar = (props: any):any => {
         <Flex w={'100%'} boxShadow={"lg"} height={"10vh"}>
             <Flex w={'100%'} flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
                 <Flex display={menuDisplay ? 'block' : 'none'}alignItems={'center'}>
-                    <Image ml={5} src="/Manda_Labs_Logo.jpg" width={'10vw'} alt="Logo"></Image>
+                    <Image height={'100%'} ml={5} src="/Manda_Labs_Logo.jpg" width={'9vw'} alt="Logo"></Image>
                 </Flex>
                 <Flex display={menuDisplay ? 'none' : 'block'}alignItems={'center'}>
                     <Image ml={2} src="/manda-logo.jpg" width={"15vw"} alt="Logo"></Image>
