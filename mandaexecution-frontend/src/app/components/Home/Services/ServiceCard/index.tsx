@@ -22,7 +22,6 @@ const ServiceCard = (props: ServiceCardProps) => {
                 direction={{ base: 'column', sm: 'row' }}
                 overflow='hidden'
                 variant='elevated'
-                height={"100%"}
             >
             <Stack>
                 <CardBody>
