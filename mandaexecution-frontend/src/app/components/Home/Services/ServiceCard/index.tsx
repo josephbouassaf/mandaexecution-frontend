@@ -22,10 +22,9 @@ const ServiceCard = (props: ServiceCardProps) => {
                 direction={{ base: 'column', sm: 'row' }}
                 overflow='hidden'
                 variant='elevated'
-                margin={'1vw'}
                 height={"100%"}
                 width={"100%"}
-                maxWidth={350}
+                maxWidth={{base:"350",md:"90vw"}}
             >
             <Stack>
                 <CardBody>

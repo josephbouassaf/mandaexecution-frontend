@@ -1,10 +1,9 @@
 'use client'
-import Image from "next/image";
 import React, { useContext } from "react";
 import mandaLogoDesktop from "../../../assets/Manda_Labs_Logo.jpg"; 
 import mandaLogoMobile from "../../../assets/manda-logo.jpg"; 
 import { useState, useEffect } from "react";
-import { Box, Button, Collapse, Flex, Icon, Tooltip } from "@chakra-ui/react";
+import { Box, Button, Collapse, Flex, Icon, Image, Tooltip } from "@chakra-ui/react";
 import ErrorModal from "../ErrorModal";
 import { ModalProps } from "../ErrorModal/type";
 import { WalletContext } from "@/app/context/wallet";
@@ -75,12 +74,12 @@ const Navbar = (props: any):any => {
         <Flex w={'100%'} boxShadow={"lg"} height={"10vh"}>
             <Flex w={'100%'} flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
                 <Flex display={menuDisplay ? 'block' : 'none'}alignItems={'center'}>
-                    <Box ml={5}><Image src={mandaLogoDesktop} width="120" alt="Logo"></Image></Box>
+                    <Image ml={5} src="/Manda_Labs_Logo.jpg" width={'10vw'} alt="Logo"></Image>
                 </Flex>
                 <Flex display={menuDisplay ? 'none' : 'block'}alignItems={'center'}>
-                    <Box ml={5}><Image src={mandaLogoMobile} width="90" alt="Logo"></Image></Box>
+                    <Image ml={2} src="/manda-logo.jpg" width={"15vw"} alt="Logo"></Image>
                 </Flex>
-                <Flex mr={'3vw'} flexDirection={'row'} alignItems={'center'}>
+                <Flex maxWidth={'80vw'}mr={'3vw'} flexDirection={'row'} alignItems={'center'}>
                     <Button margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "black", }}} as='a' href='https://calendly.com/mandalabs-jules/30min' target='_blank' rel="noopener noreferrer" borderRadius={'full'} leftIcon={<Icon as={BiConversation}></Icon>} backgroundColor={'black'} color={'white'}>Talk to us</Button>
                     {
                     hasProvider && (wallet === initialState) &&
