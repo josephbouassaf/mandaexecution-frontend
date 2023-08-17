@@ -23,8 +23,6 @@ const ServiceCard = (props: ServiceCardProps) => {
                 overflow='hidden'
                 variant='elevated'
                 height={"100%"}
-                width={"100%"}
-                maxWidth={{base:"350",md:"90vw"}}
             >
             <Stack>
                 <CardBody>

@@ -21,7 +21,7 @@ const ServicesRow = (
                 <Text mr={10}>{title}</Text>
                 <Divider/>
             </Flex>
-            <SimpleGrid p={5} minChildWidth={350} spacing={5} justifyContent={'center'}>
+            <SimpleGrid p={5} minChildWidth={{base:"90vw",md:350}} spacing={5} justifyContent={'center'}>
                 {children}
             </SimpleGrid>
         </>
