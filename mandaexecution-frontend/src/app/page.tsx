@@ -9,8 +9,8 @@ import Footer from "./components/common/Footer";
 
 export default function Home() {
   return (
-        <Container maxWidth="70vw" centerContent>
-          <Stack spacing={'24px'}>
+        <Container maxWidth="100vw" centerContent>
+          <Stack align={'center'} w={'100%'}spacing={'24px'}>
             <Services/>
           </Stack> 
         </Container>
