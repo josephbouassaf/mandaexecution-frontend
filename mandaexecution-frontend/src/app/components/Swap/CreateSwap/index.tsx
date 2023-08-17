@@ -1,3 +1,4 @@
+'use client'
 import { Card, 
     CardHeader,  
     CardBody, 
@@ -65,9 +66,9 @@ const CreateSwap = () => {
     return (
         <div>
             {errorMessage && <ErrorModal errorMessage={errorProps.errorMessage} onClose={errorProps.onClose} isOpen={errorProps.isOpen}></ErrorModal>}  
-            <Card bgGradient="radial(blue.400, blue.600, blue.500)" width="100%" align='center'>
+            <Card backgroundColor={"white"} width="100%" align='center'>
                 <CardHeader>
-                    <Text fontWeight={'bold'} color={'white'} fontSize={'36px'}>Create Your Own Swaps With Manda</Text>
+                    <Text fontWeight={'bold'} fontSize={'36px'} textAlign={'center'}>Create Your Own Swaps With Manda.</Text>
                 </CardHeader>
                 <CardBody>
                 <Stack spacing={4}>
@@ -114,7 +115,7 @@ const CreateSwap = () => {
                 </Stack>
                 </CardBody>
                 <CardFooter>
-                    <Button backgroundColor='#3D0ACE' onClick={handleCreateRequest} isLoading={isLoading} loadingText="Submitting Request" colorScheme='blue'>Create Swap Request</Button>
+                    <Button borderRadius={'full'} backgroundColor='black' color={"white"} onClick={handleCreateRequest} isLoading={isLoading} loadingText="Submitting Request">Create Swap Request</Button>
                 </CardFooter>
             </Card>
         </div>

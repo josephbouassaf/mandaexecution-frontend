@@ -34,11 +34,9 @@ const ServiceCard = (props: ServiceCardProps) => {
                         </Text>
                 </CardBody>
                 <CardFooter>
-                    <Link href={link}>
-                        <Button sx={{"&:hover": {textDecoration: "none", backgroundColor: "black"}}} borderRadius={'full'} backgroundColor={!additionalText ? '#3D0ACE' : 'black'} color={'white'} leftIcon={<Icon as={buttonIcon}></Icon>}variant='solid' colorScheme='blue'>
-                            {`${actionButtonText} (${additionalText})`}
-                        </Button>
-                    </Link>
+                    <Button sx={{"&:hover": {textDecoration: "none", backgroundColor: "black"}}} borderRadius={'full'} backgroundColor={!additionalText ? '#3D0ACE' : 'black'} color={'white'} leftIcon={<Icon as={buttonIcon}></Icon>}variant='solid' colorScheme='blue'>
+                        <Link href={link}> {`${actionButtonText} (${additionalText})`}</Link>
+                    </Button>
                 </CardFooter>
             </Stack>
         </Card>
