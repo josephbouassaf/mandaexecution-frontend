@@ -17,8 +17,8 @@ const ServicesRow = (
    const {title} = props; 
     return (
         <>
-            <Flex w={"100%"} direction={'column'}>
-                <Text>{title}</Text>
+            <Flex marginTop={'2vh'} w={"100%"} direction={'column'} alignItems={'end'}>
+                <Text mr={10}>{title}</Text>
                 <Divider/>
             </Flex>
             <SimpleGrid p={5} minChildWidth={350} spacing={5} justifyItems={'center'}>

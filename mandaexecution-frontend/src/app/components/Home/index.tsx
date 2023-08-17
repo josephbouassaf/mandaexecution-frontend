@@ -1,97 +1,117 @@
-import { Container, Flex, Text } from '@chakra-ui/react';
+import { Flex, Text } from '@chakra-ui/react';
 import React from 'react';
 import ServicesRow from './Services/ServicesRow';
 import ServiceCard from './Services/ServiceCard';
 import {AiOutlineSwap} from "react-icons/ai";
 import {FiGitMerge} from "react-icons/fi";
 import {TbPacman} from "react-icons/tb";
-import {PiContactlessPaymentBold} from "react-icons/pi";
 import {TbUsersGroup} from "react-icons/tb"; 
-import {GiReceiveMoney} from "react-icons/gi"; 
-import {AiOutlineSchedule} from "react-icons/ai"
+import {BiTimer, BiPaperPlane} from "react-icons/bi"; 
+import {MdCallSplit} from "react-icons/md"; 
 
 
 const Services = () => {
     return (
         <>
                 <Flex w={"100%"} flexDirection={'column'} justifyContent={'center'}>
-                    <Text fontSize={'42px'} fontWeight={'extrabold'} textAlign={'center'}>
-                        Welcome to Manda
+                    <Text marginTop={'4vh'} fontSize={'42px'} textAlign={'center'}>
+                        Welcome to <span style={{fontWeight:'999'}}>Manda.</span>
                     </Text>
-                    <Text fontWeight={'bold'} fontSize={'24px'} textAlign={'center'}>Architect your business operation, execute it later</Text>
+                    <Text fontWeight={'bold'} fontSize={'24px'} textAlign={'center'}>Architect your business operation, execute it later.</Text>
                 </Flex>
                 <Flex w={'100%'} justifyContent={'center'} flexDirection={'column'}>
                     <ServicesRow props={{title:'Investment Contracts'}}>
                         <ServiceCard
                         size={3}
                         index={0}
-                        title="Asset Swap"
-                        description="Swap any two sets of digital assets with our swap contract. Engage in treasury diversification, liquidity consolidation, and more with one or more counterparties. "
+                        title="OTC"
+                        description="Purchase any digital assets with Manda swap system. Engage in treasury diversification, liquidity consolidation, and more with one or more counterparties."
                         link=""
                         buttonIcon={AiOutlineSwap}
-                        additionalText='Coming Soon!'
-                        actionButtonText="Swap!"/>
+                        additionalText='Coming Soon'
+                        actionButtonText="Swap"/>
                         <ServiceCard
                         size={3}
                         index={1}
-                        title="DAO2DAO Mergers"
-                        description="Plan & Execute DAO2DAO Merger operations. Merge your digital assets, communities, and more"
+                        title="DAO Merger"
+                        description="Plan & Execute DAO Merger operations. Merge your treasury, communities in a single operation."
                         link=""
                         buttonIcon={FiGitMerge}
-                        additionalText='Coming Soon!'
-                        actionButtonText="Merge!"/>
+                        additionalText='Coming Soon'
+                        actionButtonText="Merge"/>
                         <ServiceCard
                         size={3}
                         index={2}
-                        title="DAO2DAO Acquisitions"
-                        description="Plan & Execute DAO2DAO Acquisition operations. Increase your reach, become an unforkable moat."
+                        title="DAO Acquisitions"
+                        description="Plan & Execute DAO Acquisition operations. Increase your reach, become an unforkable moat."
                         link=""
                         buttonIcon={TbPacman}
-                        additionalText='Coming Soon!'
-                        actionButtonText="Acquire!"/>
-                    </ServicesRow>
-                    <ServicesRow props={{title:'Payment Contracts'}}>
+                        additionalText='Coming Soon'
+                        actionButtonText="Acquire"/>
                         <ServiceCard
-                        size={2}
-                        index={0}
-                        title="Payment Contract"
-                        description="Set up a future payment to a 3rd Party upon the conditions you set are met"
+                        size={3}
+                        index={2}
+                        title="Vesting"
+                        description="Schedule vesting plans, release tokens progressively over time."
                         link=""
-                        buttonIcon={PiContactlessPaymentBold}
-                        additionalText='Coming Soon!'
-                        actionButtonText="Pay!"/>
-                        <ServiceCard 
-                        size={2}
-                        index={1}
-                        title="Vesting Contract"
-                        description="Set up a vesting schedule to be released to 3rd party"
-                        link=""
-                        buttonIcon={AiOutlineSchedule}
-                        additionalText='Coming Soon!'
-                        actionButtonText="Schedule!"/>
-                    </ServicesRow>
-                    <ServicesRow props={{title:'Service Contracts'}}>
+                        buttonIcon={BiTimer}
+                        additionalText='Coming Soon'
+                        actionButtonText="Schedule"/>
                         <ServiceCard
-                        size={1}
-                        index={0}
-                        title="Service Contract"
-                        description="Set up a Service Agreement Contract with a counterparty. Decide on the terms, reach them and collet your payment."
+                        size={3}
+                        index={2}
+                        title="Airdrop"
+                        description="Distribute tokens in a single operation."
                         link=""
-                        buttonIcon={GiReceiveMoney}
-                        additionalText='Coming Soon!'
-                        actionButtonText="Collect!"/>
+                        buttonIcon={BiPaperPlane}
+                        additionalText='Coming Soon'
+                        actionButtonText="Airdrop"/>
+                        <ServiceCard
+                        size={3}
+                        index={2}
+                        title="DAO Dissolution"
+                        description="Plan & execute the dissolution of your organization."
+                        link=""
+                        buttonIcon={MdCallSplit}
+                        additionalText='Coming Soon'
+                        actionButtonText="Dissolve"/>
                     </ServicesRow>
+                </Flex>
+                <Flex marginTop={'4vh'} w={"100%"} flexDirection={'column'} justifyContent={'center'}>
+                    <Text fontWeight={'bold'} fontSize={'24px'} textAlign={'center'}>Harvest and Compute collective intents.</Text>
+                </Flex>
+                <Flex w={'100%'} justifyContent={'center'} flexDirection={'column'}>
                     <ServicesRow props={{title:'Governance'}}>
                         <ServiceCard
                         size={1}
                         index={0}
-                        title="Price Discovery"
-                        description="Use our innovative voting sytem, to agree on a price collectively"
+                        title="Treasury Allocation"
+                        description="Decide together on the amount of resources to allocate."
                         link=""
                         buttonIcon={TbUsersGroup}
-                        additionalText='Coming Soon!'
-                        actionButtonText="Negotiate!"/>
+                        additionalText='Coming Soon'
+                        actionButtonText="Negotiate"/>
+                        <ServiceCard
+                        size={1}
+                        index={0}
+                        title="Counter offer"
+                        description="Challenge a proposal, find a more satisfying price."
+                        link=""
+                        buttonIcon={TbUsersGroup}
+                        additionalText='Coming Soon'
+                        actionButtonText="Negotiate"/>
+                        <ServiceCard
+                        size={1}
+                        index={0}
+                        title="Asset pricing"
+                        description="Discover the price of a tokenized asset together, decide together."
+                        link=""
+                        buttonIcon={TbUsersGroup}
+                        additionalText='Coming Soon'
+                        actionButtonText="Negotiate"/>
+                    
                     </ServicesRow>
+                    
                 </Flex>
         </>
     ); 

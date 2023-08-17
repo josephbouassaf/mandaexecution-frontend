@@ -1,22 +1,23 @@
 'use client'
 import Image from "next/image";
 import React, { useContext } from "react";
-import mandaLogo from "../../../assets/manda-logo.jpg"; 
+import mandaLogoDesktop from "../../../assets/Manda_Labs_Logo.jpg"; 
+import mandaLogoMobile from "../../../assets/manda-logo.jpg"; 
 import { useState, useEffect } from "react";
-import { Box, Button, Flex, Icon } from "@chakra-ui/react";
+import { Box, Button, Collapse, Flex, Icon, Tooltip } from "@chakra-ui/react";
 import ErrorModal from "../ErrorModal";
 import { ModalProps } from "../ErrorModal/type";
 import { WalletContext } from "@/app/context/wallet";
 import { ethers } from "ethers";
 import {BiWalletAlt, BiConversation} from "react-icons/bi"; 
 
-
 const Navbar = (props: any):any => {
 
     const [hasProvider, setHasProvider] = useState<boolean | null>(null); 
     const {wallet, setWallet, initialState} = useContext(WalletContext);
     const [provider, setProvider] = useState<any>(null);  
-    const [address, setAddress] = useState<string>(''); 
+    const [address, setAddress] = useState<string>('');
+    const [menuDisplay, setMenuDisplay] = useState<boolean>(false); 
 
     const [isConnecting, setIsConnecting] = useState(false); 
     const [error, setError] = useState(false); 
@@ -27,7 +28,6 @@ const Navbar = (props: any):any => {
 
         const refreshAccounts = (accounts: string[]) => {
             if(accounts.length < 1) {
-                console.log('I should go here')
                 setWallet(initialState); 
                 setAddress(''); 
             }
@@ -45,7 +45,9 @@ const Navbar = (props: any):any => {
                 window.ethereum.on('accountsChanged', refreshAccounts) 
             }
         }
-
+        if(window.innerWidth > 768) {
+            setMenuDisplay(true); 
+        }
         getProvider();
     }, [wallet]); 
 
@@ -70,21 +72,24 @@ const Navbar = (props: any):any => {
 
     const disableConnect = Boolean(wallet) && isConnecting
     return (
-        <Flex w={'100%'} boxShadow={"lg"}>
-            <Flex w={'100%'} flexDirection={'row'} justifyContent={'space-between'}>
-                <Flex>
-                    <div><Image src={mandaLogo} width="90" alt="Logo"></Image></div>
+        <Flex w={'100%'} boxShadow={"lg"} height={"10vh"}>
+            <Flex w={'100%'} flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
+                <Flex display={menuDisplay ? 'block' : 'none'}alignItems={'center'}>
+                    <Box ml={5}><Image src={mandaLogoDesktop} width="120" alt="Logo"></Image></Box>
+                </Flex>
+                <Flex display={menuDisplay ? 'none' : 'block'}alignItems={'center'}>
+                    <Box ml={5}><Image src={mandaLogoMobile} width="90" alt="Logo"></Image></Box>
                 </Flex>
                 <Flex mr={'3vw'} flexDirection={'row'} alignItems={'center'}>
-                    <div style={{marginRight:'2vw'}}><Button leftIcon={<Icon as={BiConversation}></Icon>} backgroundColor={'black'} color={'white'}>Book a time with us</Button></div>
+                    <Button margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "black", }}} as='a' href='https://calendly.com/mandalabs-jules/30min' target='_blank' rel="noopener noreferrer" borderRadius={'full'} leftIcon={<Icon as={BiConversation}></Icon>} backgroundColor={'black'} color={'white'}>Talk to us</Button>
                     {
                     hasProvider && (wallet === initialState) &&
-                        <div><Button leftIcon={<Icon as={BiWalletAlt}></Icon>} backgroundColor='#3D0ACE' color='white' disabled={disableConnect} onClick={handleConnect}>Connect Wallet</Button></div>
+                        <Button margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "#3D0ACE"}}} borderRadius={'full'} leftIcon={<Icon as={BiWalletAlt}></Icon>} backgroundColor='#3D0ACE' color='white' disabled={disableConnect} onClick={handleConnect}>Connect Wallet</Button>
                     }
                     { wallet && 
-                            <div>{address}</div>
+                            <Tooltip label={address}><Button borderRadius={'full'} variant={'outline'}>{address.substring(0,5)}...{address.slice(-5)}</Button></Tooltip>
                     }
-                 </Flex>
+                </Flex>
                 {error && <ErrorModal errorMessage={errorProps.errorMessage} onClose={errorProps.onClose} isOpen={errorProps.isOpen}></ErrorModal>}  
             </Flex>
         </Flex>
