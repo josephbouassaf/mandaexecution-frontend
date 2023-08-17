@@ -9,6 +9,7 @@ import { ModalProps } from "../ErrorModal/type";
 import { WalletContext } from "@/app/context/wallet";
 import { ethers } from "ethers";
 import {BiWalletAlt, BiConversation} from "react-icons/bi"; 
+import Link from "next/link";
 
 const Navbar = (props: any):any => {
 
@@ -74,10 +75,10 @@ const Navbar = (props: any):any => {
         <Flex w={'100%'} boxShadow={"lg"} height={"10vh"}>
             <Flex w={'100%'} flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
                 <Flex display={menuDisplay ? 'block' : 'none'}alignItems={'center'}>
-                    <Image height={'100%'} ml={5} src="/Manda_Labs_Logo.jpg" width={'9vw'} alt="Logo"></Image>
+                    <Link href="/"><Image height={'100%'} ml={5} src="/Manda_Labs_Logo.jpg" width={'9vw'} alt="Logo"></Image></Link>
                 </Flex>
                 <Flex display={menuDisplay ? 'none' : 'block'}alignItems={'center'}>
-                    <Image ml={2} src="/manda-logo.jpg" width={"15vw"} alt="Logo"></Image>
+                    <Link href="/"><Image ml={2} src="/manda-logo.jpg" width={"15vw"} alt="Logo"></Image></Link>
                 </Flex>
                 <Flex maxWidth={'80vw'}mr={'3vw'} flexDirection={'row'} alignItems={'center'}>
                     <Button margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "black", }}} as='a' href='https://calendly.com/mandalabs-jules/30min' target='_blank' rel="noopener noreferrer" borderRadius={'full'} leftIcon={<Icon as={BiConversation}></Icon>} backgroundColor={'black'} color={'white'}>Talk to us</Button>

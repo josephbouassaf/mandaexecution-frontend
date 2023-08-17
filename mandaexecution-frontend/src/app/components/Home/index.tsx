@@ -26,9 +26,9 @@ const Services = () => {
                         index={0}
                         title="OTC"
                         description="Purchase any digital assets with Manda swap system. Engage in treasury diversification, liquidity consolidation, and more with one or more counterparties."
-                        link=""
+                        link="/tools/swap"
                         buttonIcon={AiOutlineSwap}
-                        additionalText='Coming Soon'
+                        additionalText='Beta'
                         actionButtonText="Swap"/>
                         <ServiceCard
                         size={3}
