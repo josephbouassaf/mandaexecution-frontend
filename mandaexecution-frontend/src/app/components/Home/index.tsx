@@ -25,7 +25,7 @@ const Services = () => {
                         size={3}
                         index={0}
                         title="OTC"
-                        description="Purchase any digital assets with Manda swap system. Engage in treasury diversification, liquidity consolidation, and more with one or more counterparties."
+                        description="Purchase any digital assets. Engage in treasury diversification, liquidity consolidation, and more with one or more counterparties."
                         link="/tools/swap"
                         buttonIcon={AiOutlineSwap}
                         additionalText='Beta'
@@ -61,7 +61,7 @@ const Services = () => {
                         size={3}
                         index={2}
                         title="Airdrop"
-                        description="Distribute tokens in a single operation."
+                        description="Distribute tokens to a whitelist in a single operation."
                         link=""
                         buttonIcon={BiPaperPlane}
                         additionalText='Coming Soon'

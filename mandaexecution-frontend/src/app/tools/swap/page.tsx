@@ -1,6 +1,7 @@
 'use client'
 import CreateSwap from "@/app/components/Swap/CreateSwap";
 import SwapRequests from "@/app/components/Swap/SwapRequests";
+import FeedbackModal from "@/app/components/common/FeedbackModal";
 import { Container, Stack } from "@chakra-ui/react";
 
 const SwapPage = () => {
