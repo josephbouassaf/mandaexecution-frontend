@@ -1,15 +1,14 @@
 'use client'
 import React, { useContext } from "react";
-import mandaLogoDesktop from "../../../assets/Manda_Labs_Logo.jpg"; 
-import mandaLogoMobile from "../../../assets/manda-logo.jpg"; 
 import { useState, useEffect } from "react";
-import { Box, Button, Collapse, Flex, Icon, Image, Tooltip } from "@chakra-ui/react";
+import {Button, Flex, Icon, Image, Tooltip } from "@chakra-ui/react";
 import ErrorModal from "../ErrorModal";
 import { ModalProps } from "../ErrorModal/type";
 import { WalletContext } from "@/app/context/wallet";
 import { ethers } from "ethers";
 import {BiWalletAlt, BiConversation} from "react-icons/bi"; 
 import Link from "next/link";
+import FeedbackModal from "../FeedbackModal";
 
 const Navbar = (props: any):any => {
 
@@ -17,7 +16,7 @@ const Navbar = (props: any):any => {
     const {wallet, setWallet, initialState} = useContext(WalletContext);
     const [provider, setProvider] = useState<any>(null);  
     const [address, setAddress] = useState<string>('');
-    const [menuDisplay, setMenuDisplay] = useState<boolean>(false); 
+    const [openFeedbackModal, setOpenFeedbackModal] = useState<boolean>(false); 
 
     const [isConnecting, setIsConnecting] = useState(false); 
     const [error, setError] = useState(false); 
@@ -45,9 +44,6 @@ const Navbar = (props: any):any => {
                 window.ethereum.on('accountsChanged', refreshAccounts) 
             }
         }
-        if(window.innerWidth > 768) {
-            setMenuDisplay(true); 
-        }
         getProvider();
     }, [wallet]); 
 
@@ -70,18 +66,23 @@ const Navbar = (props: any):any => {
         }
     }
 
-    const disableConnect = Boolean(wallet) && isConnecting
+    const disableConnect = Boolean(wallet) && isConnecting; 
+    
+    const handleOpenFeedbackModal = () => {
+        setOpenFeedbackModal(true); 
+    }
     return (
         <Flex w={'100%'} boxShadow={"lg"} height={"10vh"}>
+            <FeedbackModal isOpen={openFeedbackModal} onClose={() => setOpenFeedbackModal(false)}/>
             <Flex w={'100%'} flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
-                <Flex display={menuDisplay ? 'block' : 'none'}alignItems={'center'}>
-                    <Link href="/"><Image height={'100%'} ml={5} src="/Manda_Labs_Logo.jpg" width={'9vw'} alt="Logo"></Image></Link>
+                <Flex display={{base:'none', md:'block'}} alignItems={'center'}>
+                    <Link href="/"><Image loading={'eager'} height={'100%'} ml={5} src="/Manda_Labs_Logo.jpg" width={'9vw'} alt="Logo"></Image></Link>
                 </Flex>
-                <Flex display={menuDisplay ? 'none' : 'block'}alignItems={'center'}>
-                    <Link href="/"><Image ml={2} src="/manda-logo.jpg" width={"15vw"} alt="Logo"></Image></Link>
+                <Flex display={{base:'block', md:'none'}} alignItems={'center'}>
+                    <Link href="/"><Image loading={'eager'} ml={2} src="/manda-logo.jpg" width={"15vw"} alt="Logo"></Image></Link>
                 </Flex>
                 <Flex maxWidth={'80vw'}mr={'3vw'} flexDirection={'row'} alignItems={'center'}>
-                    <Button margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "black", }}} as='a' href='https://calendly.com/mandalabs-jules/30min' target='_blank' rel="noopener noreferrer" borderRadius={'full'} leftIcon={<Icon as={BiConversation}></Icon>} backgroundColor={'black'} color={'white'}>Talk to us</Button>
+                    <Button onClick={handleOpenFeedbackModal} margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "black", }}} borderRadius={'full'} leftIcon={<Icon as={BiConversation}></Icon>} backgroundColor={'black'} color={'white'}>Talk to us</Button>
                     {
                     hasProvider && (wallet === initialState) &&
                         <Button margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "#3D0ACE"}}} borderRadius={'full'} leftIcon={<Icon as={BiWalletAlt}></Icon>} backgroundColor='#3D0ACE' color='white' disabled={disableConnect} onClick={handleConnect}>Connect Wallet</Button>

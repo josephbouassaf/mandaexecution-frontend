@@ -19,11 +19,11 @@ import { instantiateVault, preRegisterUser } from '@/app/functions/intu/intu';
 import { ModalProps } from '../../common/ErrorModal/type';
 import ErrorModal from '../../common/ErrorModal';
 import { VaultsContext } from '@/app/context/vaults';
-import {GiTwoCoins, GiFruitBowl} from 'react-icons/gi'; 
+import {BiCandles} from 'react-icons/bi';
+import {PiCoinVerticalLight} from "react-icons/pi";
 import { RiSwapFill } from 'react-icons/ri';
 import { AiOutlineSwap } from 'react-icons/ai';
-import {FaHandshake} from 'react-icons/fa';
-import { Vault } from "intu-sdk/lib/src/models/models";
+import {LiaHandshakeSolid} from 'react-icons/lia';
 import { isAddress } from 'ethers/lib/utils';
 
 const CreateSwap = () => {
@@ -72,36 +72,36 @@ const CreateSwap = () => {
                 </CardHeader>
                 <CardBody>
                 <Stack spacing={4}>
-                    <Flex flexDirection={'row'}justifyContent={'space-between'}>
+                    <Flex flexDirection={'row'}justifyContent={'space-between'} gap={5}>
                         <InputGroup>
                             <Input backgroundColor={'white'} borderWidth='2px' placeholder="I have 0x..." >
                             </Input>
                             <InputLeftElement>
-                                <Icon as={GiTwoCoins}></Icon>
+                                <Icon as={PiCoinVerticalLight}></Icon>
                             </InputLeftElement>
                         </InputGroup>
                         <InputGroup>
-                        <Input marginLeft={'10px'} backgroundColor={'white'} borderWidth='2px' placeholder="Amount" >
+                        <Input backgroundColor={'white'} borderWidth='2px' placeholder="Amount" >
                             </Input>
                             <InputLeftElement>
-                                <Icon marginLeft={'15px'} as={GiFruitBowl}></Icon>
+                                <Icon as={BiCandles}></Icon>
                             </InputLeftElement>
                         </InputGroup>
                     </Flex>
                     <Icon alignSelf='center' color={'white'} boxSize={7} as={RiSwapFill}></Icon>
-                    <Flex flexDirection={'row'}justifyContent={'space-between'}>
+                    <Flex flexDirection={'row'}justifyContent={'space-between'} gap={5}>
                         <InputGroup>
                             <Input backgroundColor={'white'} borderWidth='2px' placeholder="I want 0x..." >
                             </Input>
                             <InputLeftElement>
-                                <Icon as={GiTwoCoins}></Icon>
+                                <Icon as={PiCoinVerticalLight}></Icon>
                             </InputLeftElement>
                         </InputGroup>
                         <InputGroup>
-                        <Input marginLeft={'10px'} backgroundColor={'white'} borderWidth='2px' placeholder="Amount" >
+                        <Input backgroundColor={'white'} borderWidth='2px' placeholder="Amount" >
                             </Input>
                             <InputLeftElement>
-                                <Icon marginLeft={'15px'} as={GiFruitBowl}></Icon>
+                                <Icon as={BiCandles}></Icon>
                             </InputLeftElement>
                         </InputGroup>
                     </Flex>
@@ -109,7 +109,7 @@ const CreateSwap = () => {
                     <InputGroup>
                         <Input isInvalid={addressInvalid} onChange={handleCounterpartyChange} backgroundColor={'white'} borderWidth='2px' placeholder="I want to trade with 0x.." ></Input>
                         <InputLeftElement>
-                            <Icon marginLeft={'10px'} as={FaHandshake}></Icon>
+                            <Icon as={LiaHandshakeSolid}></Icon>
                         </InputLeftElement>
                     </InputGroup>
                 </Stack>

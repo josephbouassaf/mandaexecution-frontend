@@ -107,10 +107,10 @@ const SwapDetails = ({
                             <Text align='center'>100 FEI {<Icon boxSize={4} as={AiOutlineSwap}/>} 25 RARI</Text>
                             <Divider w='50%' alignSelf='center' border='2px solid #FOBD3F'></Divider>
                             <Text fontWeight='bold' align='center'> Swap Status </Text>
-                            <Text align='center'><Button color={'green.400'} variant='ghost'>{swapState}</Button></Text>
+                            <Text align='center'><Button disabled color={'green.400'} variant='unstyled'>{swapState}</Button></Text>
                             <Divider w='50%' alignSelf='center' border='2px solid #FOBD3F'></Divider>
                             <Text fontWeight='bold' align='center'> Actions </Text>
-                            <Button isLoading={isLoading} disabled={userTurn} color={'white'} backgroundColor={!userTurn ? '#3D0ACE' : 'red.400'} onClick={handleActionClick}>{getActionText(swapState,userTurn)}</Button>
+                            <Button borderRadius={'full'} isLoading={isLoading} disabled={userTurn} color={'white'} backgroundColor={!userTurn ? '#3D0ACE' : 'grey'} onClick={handleActionClick}>{getActionText(swapState,userTurn)}</Button>
                         </Stack>
                     </Flex>
                 </ModalBody>
