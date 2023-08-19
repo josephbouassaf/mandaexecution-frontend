@@ -1,0 +1,12 @@
+.connect-button {
+    color:#3D0ACE;
+    background-color: white;
+    border-radius: 20px;
+    border:1px solid whitesmoke;
+    margin-left: 10px;
+                        
+}
+
+.connect-button:hover {
+    background-color: whitesmoke;
+}

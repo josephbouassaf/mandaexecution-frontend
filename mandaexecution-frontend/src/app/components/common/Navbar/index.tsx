@@ -1,78 +1,22 @@
 'use client'
-import React, { useContext } from "react";
-import { useState, useEffect } from "react";
+import React from "react";
+import { useState} from "react";
 import {Button, Flex, Icon, Image, Tooltip } from "@chakra-ui/react";
-import ErrorModal from "../ErrorModal";
-import { ModalProps } from "../ErrorModal/type";
-import { WalletContext } from "@/app/context/wallet";
-import { ethers } from "ethers";
-import {BiWalletAlt, BiConversation} from "react-icons/bi"; 
+import {BiConversation} from "react-icons/bi"; 
 import Link from "next/link";
 import FeedbackModal from "../FeedbackModal";
+import { ConnectWallet } from "@thirdweb-dev/react";
+import "../../../styles/Navbar/navbar.css"
 
-const Navbar = (props: any):any => {
+const Navbar = () => {
 
-    const [hasProvider, setHasProvider] = useState<boolean | null>(null); 
-    const {wallet, setWallet, initialState} = useContext(WalletContext);
-    const [provider, setProvider] = useState<any>(null);  
-    const [address, setAddress] = useState<string>('');
     const [openFeedbackModal, setOpenFeedbackModal] = useState<boolean>(false); 
-
-    const [isConnecting, setIsConnecting] = useState(false); 
-    const [error, setError] = useState(false); 
-    const [errorMessage, setErrorMessage] = useState(''); 
-
-    const errorProps:ModalProps = {errorMessage: errorMessage, onClose: () => setError(false), isOpen: true}
-    useEffect(() => {
-
-        const refreshAccounts = (accounts: string[]) => {
-            if(accounts.length < 1) {
-                setWallet(initialState); 
-                setAddress(''); 
-            }
-        }
-        const getProvider = async () => {
-            const _provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-            setHasProvider(Boolean(_provider)); 
-            setProvider(_provider); 
-
-            if(_provider) {
-                const accounts = await window.ethereum.request(
-                    { method: 'eth_accounts' }
-                  );
-                refreshAccounts(accounts); 
-                window.ethereum.on('accountsChanged', refreshAccounts) 
-            }
-        }
-        getProvider();
-    }, [wallet]); 
-
-    const handleConnect = async () => {
-        setIsConnecting(true); 
-        // prompts for connection
-        if(provider) {
-            await provider.send("eth_requestAccounts", [])
-            .then(async () => {
-                setError(false); 
-                const signer = await provider.getSigner(); 
-                setWallet(signer); 
-                setAddress(await signer.getAddress())
-            })
-            .catch((err: any) => {
-                setError(true); 
-                setErrorMessage(err.message); 
-            }); 
-            setIsConnecting(false); 
-        }
-    }
-
-    const disableConnect = Boolean(wallet) && isConnecting; 
     
     const handleOpenFeedbackModal = () => {
         setOpenFeedbackModal(true); 
-    }
+    } 
     return (
-        <Flex w={'100%'} boxShadow={"lg"} height={"10vh"}>
+        <Flex w={'100%'} boxShadow={"lg"} height={{base:"10vh",md:"10vh"}}>
             <FeedbackModal isOpen={openFeedbackModal} onClose={() => setOpenFeedbackModal(false)}/>
             <Flex w={'100%'} flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
                 <Flex display={{base:'none', md:'block'}} alignItems={'center'}>
@@ -83,15 +27,11 @@ const Navbar = (props: any):any => {
                 </Flex>
                 <Flex maxWidth={'80vw'}mr={'3vw'} flexDirection={'row'} alignItems={'center'}>
                     <Button onClick={handleOpenFeedbackModal} margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "grey", }}} borderRadius={'full'} leftIcon={<Icon as={BiConversation}></Icon>} backgroundColor={'black'} color={'white'}>Talk to us</Button>
-                    {
-                    hasProvider && (wallet === initialState) &&
-                        <Button variant={'outline'} margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "whitesmoke"}}} borderRadius={'full'} leftIcon={<Icon as={BiWalletAlt}></Icon>} color='#3D0ACE' disabled={disableConnect} onClick={handleConnect}>Connect Wallet</Button>
-                    }
-                    { wallet && 
-                            <Tooltip label={address}><Button borderRadius={'full'} sx={{"&:hover": {textDecoration: "none", backgroundColor: "whitesmoke"}}} variant={'outline'}>{address.substring(0,5)}...{address.slice(-5)}</Button></Tooltip>
-                    }
+                    <ConnectWallet
+                        btnTitle="Connect Wallet"
+                        className="connect-button"
+                    />
                 </Flex>
-                {error && <ErrorModal errorMessage={errorProps.errorMessage} onClose={errorProps.onClose} isOpen={errorProps.isOpen}></ErrorModal>}  
             </Flex>
         </Flex>
     ); 
