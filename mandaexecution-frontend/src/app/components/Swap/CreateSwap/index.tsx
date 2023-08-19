@@ -33,7 +33,6 @@ const CreateSwap = () => {
     const [addressInvalid, setAddressInvalid] = useState<boolean>(false); 
     const [errorMessage, setErrorMessage] = useState<string|null>(null);  
     const {wallet} = useContext(WalletContext); 
-    const {fetchVaults, vaults} = useContext(VaultsContext); 
 
     const errorProps:ModalProps = {errorMessage: errorMessage, onClose: () => setErrorMessage(null), isOpen: true}
 
@@ -68,7 +67,7 @@ const CreateSwap = () => {
             {errorMessage && <ErrorModal errorMessage={errorProps.errorMessage} onClose={errorProps.onClose} isOpen={errorProps.isOpen}></ErrorModal>}  
             <Card backgroundColor={"white"} width="100%" align='center'>
                 <CardHeader>
-                    <Text fontWeight={'bold'} fontSize={'36px'} textAlign={'center'}>Create Your Own Swaps With Manda.</Text>
+                    <Text fontSize={'36px'} textAlign={'center'}>Create Your Own Swaps With <span style={{fontWeight:'999'}}>Manda.</span></Text>
                 </CardHeader>
                 <CardBody>
                 <Stack spacing={4}>
