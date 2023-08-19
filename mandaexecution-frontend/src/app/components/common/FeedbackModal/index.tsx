@@ -48,10 +48,10 @@ const FeedbackModal = ({isOpen, onClose}:FeedbackModalProps) => {
                setIsSent(true); 
             }, function(error) {
                 setFeedbackText(null); 
-               setName(null);
-               setIsLoading(false); 
-               setIsSent(false);
-               setError(error.message); 
+                setName(null);
+                setIsLoading(false); 
+                setIsSent(false);
+                setError(error.message); 
             });
         
     };
