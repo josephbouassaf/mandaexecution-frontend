@@ -82,13 +82,13 @@ const Navbar = (props: any):any => {
                     <Link href="/"><Image loading={'eager'} ml={2} src="/manda-logo.jpg" width={"15vw"} alt="Logo"></Image></Link>
                 </Flex>
                 <Flex maxWidth={'80vw'}mr={'3vw'} flexDirection={'row'} alignItems={'center'}>
-                    <Button onClick={handleOpenFeedbackModal} margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "black", }}} borderRadius={'full'} leftIcon={<Icon as={BiConversation}></Icon>} backgroundColor={'black'} color={'white'}>Talk to us</Button>
+                    <Button onClick={handleOpenFeedbackModal} margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "grey", }}} borderRadius={'full'} leftIcon={<Icon as={BiConversation}></Icon>} backgroundColor={'black'} color={'white'}>Talk to us</Button>
                     {
                     hasProvider && (wallet === initialState) &&
-                        <Button margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "#3D0ACE"}}} borderRadius={'full'} leftIcon={<Icon as={BiWalletAlt}></Icon>} backgroundColor='#3D0ACE' color='white' disabled={disableConnect} onClick={handleConnect}>Connect Wallet</Button>
+                        <Button variant={'outline'} margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "whitesmoke"}}} borderRadius={'full'} leftIcon={<Icon as={BiWalletAlt}></Icon>} color='#3D0ACE' disabled={disableConnect} onClick={handleConnect}>Connect Wallet</Button>
                     }
                     { wallet && 
-                            <Tooltip label={address}><Button borderRadius={'full'} variant={'outline'}>{address.substring(0,5)}...{address.slice(-5)}</Button></Tooltip>
+                            <Tooltip label={address}><Button borderRadius={'full'} sx={{"&:hover": {textDecoration: "none", backgroundColor: "whitesmoke"}}} variant={'outline'}>{address.substring(0,5)}...{address.slice(-5)}</Button></Tooltip>
                     }
                 </Flex>
                 {error && <ErrorModal errorMessage={errorProps.errorMessage} onClose={errorProps.onClose} isOpen={errorProps.isOpen}></ErrorModal>}  

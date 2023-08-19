@@ -10,12 +10,10 @@ interface ServiceCardProps {
     link:string;
     buttonIcon?:any,
     additionalText?:string
-    size:number; 
-    index:number; 
 
 }
 const ServiceCard = (props: ServiceCardProps) => {
-    const {title,description, actionButtonText, buttonIcon, additionalText, size, index, link} = props; 
+    const {title,description, actionButtonText, buttonIcon, additionalText, link} = props; 
 
     return (
             <Card
@@ -34,7 +32,7 @@ const ServiceCard = (props: ServiceCardProps) => {
                         </Text>
                 </CardBody>
                 <CardFooter>
-                    <Button disabled={link ? false : true} sx={{"&:hover": {textDecoration: "none", backgroundColor: link ? "black" : "grey"}}} borderRadius={'full'} backgroundColor={!link ? 'grey' : 'black'} color={'white'} leftIcon={<Icon as={buttonIcon}></Icon>}variant='solid' colorScheme='blue'>
+                    <Button disabled={link ? false : true} sx={{"&:hover": {textDecoration: "none", backgroundColor: link ? "grey" : "black"}}} borderRadius={'full'} backgroundColor={!link ? 'grey' : 'black'} color={'white'} leftIcon={<Icon as={buttonIcon}></Icon>}variant='solid' colorScheme='blue'>
                         <Link href={link}> {`${actionButtonText} (${additionalText})`}</Link>
                     </Button>
                 </CardFooter>

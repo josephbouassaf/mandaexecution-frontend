@@ -53,9 +53,9 @@ const FeedbackModal = ({isOpen, onClose}:FeedbackModalProps) => {
                          <FormLabel>Feedback</FormLabel>
                         <Textarea placeholder="Let us know how we can improve." onChange={handleFeedbackChange}/>
                     </FormControl>
-                        <Button onClick={handleSendEmail} leftIcon={<Icon as={MdOutlineForwardToInbox}></Icon>}>Send</Button>
+                        <Button alignSelf={'center'} borderRadius={"full"} width={"50%"} onClick={handleSendEmail} leftIcon={<Icon as={MdOutlineForwardToInbox}></Icon>}>Send</Button>
                         <Text alignSelf={'center'}>And/Or</Text>
-                        <Button mb={4} sx={{"&:hover": {textDecoration: "none", backgroundColor: "black", }}} as='a' href='https://calendly.com/mandalabs-jules/30min' target='_blank' rel="noopener noreferrer" borderRadius={'full'} leftIcon={<Icon as={BiConversation}></Icon>} backgroundColor={'black'} color={'white'}>Schedule a Meeting.</Button>
+                        <Button width={"50%"} alignSelf={"center"} mb={4} sx={{"&:hover": {textDecoration: "none", backgroundColor: "black", }}} as='a' href='https://calendly.com/mandalabs-jules/30min' target='_blank' rel="noopener noreferrer" borderRadius={'full'} leftIcon={<Icon as={BiConversation}></Icon>} backgroundColor={'black'} color={'white'}>Schedule a Meeting.</Button>
                 </Flex>
             </ModalBody>
         </ModalContent>
