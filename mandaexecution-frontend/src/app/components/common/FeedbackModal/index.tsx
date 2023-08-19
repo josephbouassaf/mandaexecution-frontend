@@ -14,8 +14,9 @@ const FeedbackModal = ({isOpen, onClose}:FeedbackModalProps) => {
     const [feedbackText, setFeedbackText] = useState<string|null>(null); 
     const [name, setName] = useState<string|null>(null); 
     const [isLoading, setIsLoading] = useState<boolean|undefined>(undefined); 
-    const [isSent, setIsSent] = useState<boolean|undefined>(undefined)
-    
+    const [isSent, setIsSent] = useState<boolean|undefined>(undefined); 
+    const [error, setError] = useState<string|undefined>(undefined); 
+
     const handleFeedbackChange = (e:any) => {
         setFeedbackText(e.target.value); 
     }
@@ -28,6 +29,7 @@ const FeedbackModal = ({isOpen, onClose}:FeedbackModalProps) => {
         setName(null);
         setIsLoading(undefined); 
         setIsSent(undefined);
+        setError(undefined); 
     }
 
     const handleSendEmail = async () => {
@@ -49,7 +51,7 @@ const FeedbackModal = ({isOpen, onClose}:FeedbackModalProps) => {
                setName(null);
                setIsLoading(false); 
                setIsSent(false);
-               console.log('failed to send feedback...', error);
+               setError(error.message); 
             });
         
     };
@@ -73,7 +75,7 @@ const FeedbackModal = ({isOpen, onClose}:FeedbackModalProps) => {
                          <FormLabel>Feedback</FormLabel>
                         <Textarea placeholder="Let us know how we can improve." onChange={handleFeedbackChange}/>
                     </FormControl>
-                        <Button disabled={isSent} isLoading={isLoading} variant={isSent ? 'unstyled' : 'solid'} color={isSent ? 'green.400' : 'black'} alignSelf={'center'} borderRadius={"full"} width={"50%"} onClick={handleSendEmail} leftIcon={<Icon as={MdOutlineForwardToInbox}></Icon>}>{ isSent ? 'Sent' : 'Send'}</Button>
+                        <Button disabled={isSent} isLoading={isLoading} variant={isSent ? 'unstyled' : 'solid'} color={!error ? (isSent ? 'green.400' : 'black') : 'red.300'} alignSelf={'center'} borderRadius={"full"} width={"50%"} onClick={handleSendEmail} leftIcon={<Icon as={MdOutlineForwardToInbox}></Icon>}>{ !error ? (isSent ? 'Sent' : 'Send') : 'Try again...'}</Button>
                         <Text alignSelf={'center'}>And/Or</Text>
                         <Button width={{base:"85%",md:"65%"}} alignSelf={"center"} mb={4} sx={{"&:hover": {textDecoration: "none", backgroundColor: "black", }}} as='a' href='https://calendly.com/mandalabs-jules/30min' target='_blank' rel="noopener noreferrer" borderRadius={'full'} leftIcon={<Icon as={BiConversation}></Icon>} backgroundColor={'black'} color={'white'}>Schedule a Meeting.</Button>
                 </Flex>
