@@ -22,8 +22,6 @@ const Services = () => {
                 <Flex w={'100%'} justifyContent={'center'} flexDirection={'column'}>
                     <ServicesRow props={{title:'Investment Contracts'}}>
                         <ServiceCard
-                        size={3}
-                        index={0}
                         title="OTC"
                         description="Purchase any digital assets. Engage in treasury diversification, liquidity consolidation, and more with one or more counterparties."
                         link="/tools/swap"
@@ -31,8 +29,6 @@ const Services = () => {
                         additionalText='Beta'
                         actionButtonText="Swap"/>
                         <ServiceCard
-                        size={3}
-                        index={1}
                         title="DAO Merger"
                         description="Plan & Execute DAO Merger operations. Merge your treasury, communities in a single operation."
                         link=""
@@ -40,8 +36,6 @@ const Services = () => {
                         additionalText='Coming Soon'
                         actionButtonText="Merge"/>
                         <ServiceCard
-                        size={3}
-                        index={2}
                         title="DAO Acquisitions"
                         description="Plan & Execute DAO Acquisition operations. Increase your reach, become an unforkable moat."
                         link=""
@@ -49,8 +43,6 @@ const Services = () => {
                         additionalText='Coming Soon'
                         actionButtonText="Acquire"/>
                         <ServiceCard
-                        size={3}
-                        index={2}
                         title="Vesting"
                         description="Schedule vesting plans, release tokens progressively over time."
                         link=""
@@ -58,8 +50,6 @@ const Services = () => {
                         additionalText='Coming Soon'
                         actionButtonText="Schedule"/>
                         <ServiceCard
-                        size={3}
-                        index={2}
                         title="Airdrop"
                         description="Distribute tokens to a whitelist in a single operation."
                         link=""
@@ -67,8 +57,6 @@ const Services = () => {
                         additionalText='Coming Soon'
                         actionButtonText="Airdrop"/>
                         <ServiceCard
-                        size={3}
-                        index={2}
                         title="DAO Dissolution"
                         description="Plan & execute the dissolution of your organization."
                         link=""
@@ -83,8 +71,6 @@ const Services = () => {
                 <Flex w={'100%'} justifyContent={'center'} flexDirection={'column'}>
                     <ServicesRow props={{title:'Governance'}}>
                         <ServiceCard
-                        size={1}
-                        index={0}
                         title="Treasury Allocation"
                         description="Decide together on the amount of resources to allocate."
                         link=""
@@ -92,8 +78,6 @@ const Services = () => {
                         additionalText='Coming Soon'
                         actionButtonText="Negotiate"/>
                         <ServiceCard
-                        size={1}
-                        index={0}
                         title="Counter offer"
                         description="Challenge a proposal, find a more satisfying price."
                         link=""
@@ -101,8 +85,6 @@ const Services = () => {
                         additionalText='Coming Soon'
                         actionButtonText="Negotiate"/>
                         <ServiceCard
-                        size={1}
-                        index={0}
                         title="Asset pricing"
                         description="Discover the price of a tokenized asset together, decide together."
                         link=""

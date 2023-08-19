@@ -41,9 +41,9 @@ const SwapRequests = () => {
     return (
         <div>
             <SwapDetails isOpen={isOpen} onClose={() => setIsOpen(false)} vault={currVault}></SwapDetails>
-            <TableContainer display={{base: 'none', md:'block'}} boxShadow="xl" marginBottom={'20px'}>
+            <TableContainer borderRadius={5} display={{base: 'none', md:'block'}} boxShadow="xl" marginBottom={'20px'}>
                 <Button bgColor={'white'} mt={'5px'} mr={'5px'} float={'right'} onClick={handleRefreshVaults}><Icon color={'black'} boxSize={7} as={MdRefresh}></Icon></Button>
-                <Table colorScheme={'twitter'} variant='simple'>
+                <Table colorScheme={'blackAlpha'} variant='simple'>
                     <TableCaption>Swap Requests</TableCaption>
                     <Thead>
                         <Tr>
