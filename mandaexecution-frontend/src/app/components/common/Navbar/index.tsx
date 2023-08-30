@@ -16,7 +16,7 @@ const Navbar = () => {
         setOpenFeedbackModal(true); 
     } 
     return (
-        <Flex w={'100%'} boxShadow={"lg"} height={{base:"10vh",md:"10vh"}}>
+        <Flex w={'100%'} boxShadow={"lg"} height={{base:"10vh",md:"10vh", l:"12vh",xl: "12vh"}}>
             <FeedbackModal isOpen={openFeedbackModal} onClose={() => setOpenFeedbackModal(false)}/>
             <Flex w={'100%'} flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'}>
                 <Flex display={{base:'none', md:'block'}} alignItems={'center'}>

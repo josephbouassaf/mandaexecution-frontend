@@ -1,4 +1,6 @@
-import { ContractTransaction, Signer } from "ethers";
+import { 
+    ContractTransaction, 
+    Signer } from "ethers";
 import { 
     vaultCreation, 
     preRegistration, 
@@ -7,25 +9,28 @@ import {
     registerStep3,
     completeVault,
     signTx,
-    combineSignedTx
+    combineSignedTx,
+    submitTransaction
 } from "intu-sdk/lib/src/services";
-import {getVaults, 
-    proposeTransaction
+import {
+    getVaultMPK, 
+    getVaults, 
 } from "intu-sdk/lib/src/services/web3"
 import {
     getUserPreRegisterInfos,
-    getUserStep1Infos,
-    getUserStep2Infos,
-    getUserStep3Infos
+    getUserRegistrationStep1Infos,
+    getUserRegistrationStep2Infos,
+    getUserRegistrationStep3Infos
 } from "intu-sdk/lib/src/services/web3/utils"
 import { provider} from '../ethereum/ethereum'
 import { Vault } from "intu-sdk/lib/src/models/models";
 import { hasAllowance } from "../ethereum/contracts/functions";
 import { 
-    FEI_TOKEN_ADDRESS, 
-    RARI_TOKEN_ADDRESS,
+    KEY_SHARE_THRESHOLD,
+    SWAP_CONTRACT_ADDRESS,
     SwapState
 } from "../constants";
+import { deconstructVaultName } from "../utils/utils";
 
 /**
  * returns all vaults for a given user
@@ -43,9 +48,8 @@ export async function getUserVaults(signerAddress:string) {
  * @param signer 
  * @param participants 
  */
-export async function instantiateVault(signer: Signer,participants: string[]) {
-    const vaultName = "newVault-"+ Math.ceil(100000*Math.random());
-    const tx:ContractTransaction = await vaultCreation(participants, vaultName, 99,99,99,signer); 
+export async function instantiateVault(signer: Signer,participants: string[], vaultName:string) {
+    const tx:ContractTransaction = await vaultCreation(participants, vaultName, KEY_SHARE_THRESHOLD,KEY_SHARE_THRESHOLD,KEY_SHARE_THRESHOLD,signer); 
     await tx.wait(); 
 };
 
@@ -65,50 +69,48 @@ export async function preRegisterUser(vaultAddress: string, signer: Signer) {
  * @param signer 
  */
 export async function registerUser(vaultAddress:string, signer: Signer, step:number) {
+    let receipt; 
     if(step === 1) {
-        await registerStep1(vaultAddress, signer); 
+        receipt = await registerStep1(vaultAddress, signer); 
     }
     if(step === 2) {
-        await registerStep2(vaultAddress, signer);
+        receipt = await registerStep2(vaultAddress, signer);
     }
     if(step === 3) {
-        await registerStep3(vaultAddress, signer); 
+        receipt = await registerStep3(vaultAddress, signer); 
     }
+
+    if(receipt)
+        await receipt.wait(); 
 }
      
 export async function completeVaultRegistration(vaultAddress: string, signer: Signer) {
-    await completeVault(vaultAddress, signer);
+    const receipt = await completeVault(vaultAddress, signer);
+    await receipt.wait();
 }
 
 export async function isUserPreregistered(vaultAddress:string, signerAddress:string):Promise<boolean> {
     return await getUserPreRegisterInfos(vaultAddress,signerAddress,provider)
-    .then((obj) => true)
+    .then((registrationObj) => registrationObj.registered)
     .catch((err) => false); 
 }
 
 export async function isUserRegisteredStep1(vaultAddress:string, signerAddress:string):Promise<boolean> {
-    return await getUserStep1Infos(vaultAddress,signerAddress,provider)
-    .then((obj) => true)
+    return await getUserRegistrationStep1Infos(vaultAddress,signerAddress,provider)
+    .then((registrationObj) => registrationObj.registered)
     .catch((err) => false); 
 }
 
 export async function isUserRegisteredStep2(vaultAddress:string, signerAddress:string):Promise<boolean> {
-    return await getUserStep2Infos(vaultAddress,signerAddress,provider)
-    .then((obj) => true)
+    return await getUserRegistrationStep2Infos(vaultAddress,signerAddress,provider)
+    .then((registrationObj) => registrationObj.registered)
     .catch((err) => false); 
 }
 
 export async function isUserRegisteredStep3(vaultAddress:string, signerAddress:string):Promise<boolean> {
-    return await getUserStep3Infos(vaultAddress,signerAddress,provider)
-    .then((obj) => true)
+    return await getUserRegistrationStep3Infos(vaultAddress,signerAddress,provider)
+    .then((registrationObj) => registrationObj.registered)
     .catch((err) => false); 
-}
-
-export async function areAllUsersRegistered(vault:Vault):Promise<boolean> {
-    let areUsersRegistered = false; 
-    for(var i = 0; i < vault.users.length; i++)
-        areUsersRegistered = await isUserRegisteredStep3(vault.vaultAddress, vault.users[i].address); 
-    return areUsersRegistered; 
 }
 
 export async function getUserStatus(swapState:string, vault:Vault,signerAddress:string) {
@@ -121,6 +123,10 @@ export async function getUserStatus(swapState:string, vault:Vault,signerAddress:
         userStatus = await isUserRegisteredStep2(vault.vaultAddress,signerAddress);
     } else if (swapState === SwapState.StepThree) {
         userStatus = await isUserRegisteredStep3(vault.vaultAddress,signerAddress);
+    } else if (swapState === SwapState.Registered) {
+        userStatus = false;
+    } else if (swapState === SwapState.Confirmed) {
+        userStatus = false; 
     } else if (swapState === SwapState.Funding) {
         userStatus = await hasUserFundedSwap(vault,signerAddress); 
     } else if (swapState === SwapState.Signing) { 
@@ -131,21 +137,18 @@ export async function getUserStatus(swapState:string, vault:Vault,signerAddress:
     return userStatus; 
 }
 
-function hasUserSigned(vault:Vault, txId:number, signerAddress:string) {
-    const tx = vault.transactions.find(tx => tx.id === txId); 
-    if(tx) {
-        const userSignedTx = tx?.userSignedTransactions.find(userTx => userTx.address === signerAddress); 
-        return Boolean(userSignedTx); 
-    } 
-    return false; 
-}
-
 export async function getPostRegState(vault:Vault) {
-    if(!haveUsersFundedSwap(vault)) {
+    const txs = vault.transactions; 
+
+    if(txs.length === 0) {
+        return SwapState.Confirmed; 
+    }
+    const funded = await haveUsersFundedSwap(vault);
+    if(!funded) {
         return SwapState.Funding; 
     }
-     
-    if(!haveUsersSignedSwap(vault)) {
+    const signed = await haveUsersSignedSwap(vault); 
+    if(!signed) {
         return SwapState.Signing; 
     }
 
@@ -187,7 +190,8 @@ export async function getSwapState(vault:Vault) {
                 return SwapState.StepThree;
             }
         }
-        return SwapState.Unexpected;
+
+        return SwapState.Registered; 
     }
 }
 
@@ -198,8 +202,13 @@ export async function getSwapState(vault:Vault) {
  */
 export async function hasUserFundedSwap(vault:Vault, signerAddress: string) {
     let fundingState = false; 
-    if(vault.masterPublicAddress)
-        fundingState = (await hasAllowance(FEI_TOKEN_ADDRESS,vault.masterPublicAddress,signerAddress)) || (await hasAllowance(RARI_TOKEN_ADDRESS,vault.masterPublicAddress,signerAddress));
+    const swapData = deconstructVaultName(vault.name);
+    const mpk = await getVaultMPK(vault.vaultAddress,provider);
+    if(swapData) {
+        const numeraires = [swapData[1], swapData[3]]; 
+        if(vault.masterPublicAddress && numeraires)
+            fundingState = (await hasAllowance(numeraires[0],signerAddress,mpk)) || (await hasAllowance(numeraires[1],signerAddress,mpk));
+    } 
     return fundingState; 
 }
 
@@ -211,8 +220,16 @@ export async function hasUserFundedSwap(vault:Vault, signerAddress: string) {
 export async function haveUsersFundedSwap(vault:Vault) {
     let fundingState = false; 
     if(vault.masterPublicAddress) {
-        for(var i = 0; i<vault.users.length; i++)
-            fundingState = (await hasAllowance(FEI_TOKEN_ADDRESS,vault.masterPublicAddress,vault.users[i].address)) || (await hasAllowance(RARI_TOKEN_ADDRESS,vault.masterPublicAddress,vault.users[i].address));
+        const swapData = deconstructVaultName(vault.name);
+        if(swapData) {
+            const numeraires = [swapData[1], swapData[3]]; 
+            for(var i = 0; i<vault.users.length; i++) {
+                fundingState = (await hasAllowance(numeraires[0],vault.users[i].address,vault.masterPublicAddress)) || (await hasAllowance(numeraires[1],vault.users[i].address,vault.masterPublicAddress));
+                if(!fundingState) {
+                    return fundingState;
+                }
+            }
+        }
     }
     return fundingState; 
 }
@@ -222,9 +239,7 @@ export async function haveUsersFundedSwap(vault:Vault) {
  * @param vault 
  */
 export async function hasUserSignedSwap(vault:Vault, signerAddress:string) {
-    let signingState = false; 
-    signingState =  (await hasUserSigned(vault,vault.transactions[-1].id,signerAddress)); 
-    return signingState; 
+    return vault.transactions[vault.transactions.length-1].userSignedTransactions.map(tx => tx.address === signerAddress).length > 0 ? true : false;  
 }
 
 /**
@@ -232,10 +247,7 @@ export async function hasUserSignedSwap(vault:Vault, signerAddress:string) {
  * @param vault 
  */
 export async function haveUsersSignedSwap(vault:Vault) {
-    let signingState = false; 
-    for(var i = 0; i<vault.users.length; i++)
-        signingState =  (await hasUserSigned(vault,vault.transactions[-1].id,vault.users[i].address)); 
-    return signingState; 
+    return vault.transactions[vault.transactions.length-1].signedTransactionsNeeded >= 1 ? false : true;  
 }
 
 /**
@@ -244,8 +256,9 @@ export async function haveUsersSignedSwap(vault:Vault) {
  * @param vaultName 
  * @param emptyTx 
  */
-export async function postTransaction(signer: Signer, vaultAddress:string, emptyTx:string) {
-    await proposeTransaction(vaultAddress, emptyTx,signer); 
+export async function postTransaction(signer: Signer, vaultAddress:string, data:string, nonce:number, value:number) {
+    const chainId = (await provider.getNetwork()).chainId;
+    await submitTransaction(SWAP_CONTRACT_ADDRESS, value, chainId, nonce, data,"","",vaultAddress, signer); 
 }
 /**
  * sign a transaction with signer's private key
@@ -254,7 +267,8 @@ export async function postTransaction(signer: Signer, vaultAddress:string, empty
  * @param vaultAddress 
  */
 export async function signTransaction(signer:Signer, txId:number, vaultAddress:string) {
-    await signTx(vaultAddress,txId,signer); 
+    const receipt = await signTx(vaultAddress,txId,signer); 
+    await receipt.wait(); 
 }
 
 /**

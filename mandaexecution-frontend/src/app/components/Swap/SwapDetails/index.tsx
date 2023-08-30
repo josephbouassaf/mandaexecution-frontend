@@ -16,14 +16,18 @@ import {
 
 import {RiSwapFill} from 'react-icons/ri'
 import {AiOutlineSwap} from 'react-icons/ai'
-import { useContext, useEffect, useState } from "react";
+import {useEffect, useState } from "react";
 import { Vault } from "intu-sdk/lib/src/models/models";
-import { WalletContext } from "@/app/context/wallet";
 import {getSwapState, getUserStatus } from "@/app/functions/intu/intu";
-import { FEI_TOKEN_ADDRESS, RARI_TOKEN_ADDRESS } from "@/app/functions/constants";
-import { getActionText, getNextAction, getProgressBarValue } from "@/app/functions/utils/utils";
+import { 
+    deconstructVaultName, 
+    getActionText, 
+    getNextAction, 
+    getProgressBarValue } from "@/app/functions/utils/utils";
 import ErrorModal from "../../common/ErrorModal";
 import { ModalProps } from '../../common/ErrorModal/type';
+import { useSigner } from "@thirdweb-dev/react";
+import { getTokenSymbol } from "@/app/functions/ethereum/contracts/functions";
 
 interface SwapDetailsProps {
     isOpen: boolean,
@@ -43,20 +47,21 @@ const SwapDetails = ({
     const [progressBarValue, setProgressBarValue] = useState(0); 
     const [errorMessage, setErrorMessage] = useState<string|null>(null); 
 
-    const {wallet} = useContext(WalletContext);
+    const details = deconstructVaultName(vault?.name); 
+
+    const signer = useSigner(); 
 
     const errorProps:ModalProps = {errorMessage: errorMessage, onClose: () => setErrorMessage(null), isOpen: true}
 
 
     const refreshSwapState = async () => {
-        if(vault) {
+        if(vault && signer) {
             // fetch states
-            const address = await wallet.getAddress();  
+            const address = await signer.getAddress();  
             const swapState = await getSwapState(vault);
-            const userStatus = await getUserStatus(swapState,vault,address);
-            console.log(userStatus);
+            const turn = await getUserStatus(swapState,vault,address);
             // refresh states
-            setUserTurn(userStatus);
+            setUserTurn(turn);
             setSwapState(swapState);
             setProgressBarValue(getProgressBarValue(swapState)); 
             setIsLoading(false); 
@@ -64,13 +69,14 @@ const SwapDetails = ({
     }
        
     useEffect(() => {
+        console.log(vault); 
         refreshSwapState(); 
     },[isOpen])
 
     const handleActionClick = async () => {
-            if(vault && swapState) {
+            if(vault && swapState && signer) {
                 setIsLoading(true);
-                const action = getNextAction(swapState, vault, wallet); 
+                const action = getNextAction(swapState, vault, signer); 
                 if(action) {
                     action()
                     .then(() => refreshSwapState())
@@ -104,7 +110,7 @@ const SwapDetails = ({
                             <Text align='center'>To: {vault && vault.users[1].address}</Text>
                             <Divider w='50%' alignSelf='center' border='2px solid #FOBD3F'></Divider>
                             <Text fontWeight='bold' align='center'> Swap Details </Text>
-                            <Text align='center'>100 FEI {<Icon boxSize={4} as={AiOutlineSwap}/>} 25 RARI</Text>
+                            <Text align='center'>{details ? details[0] : 'NA'} {details && getTokenSymbol(details[1])} {<Icon boxSize={4} as={AiOutlineSwap}/>} {details ? details[2] : 'NA'} {details && getTokenSymbol(details[3])}</Text>
                             <Divider w='50%' alignSelf='center' border='2px solid #FOBD3F'></Divider>
                             <Text fontWeight='bold' align='center'> Swap Status </Text>
                             <Text align='center'><Button disabled color={'green.400'} variant='unstyled'>{swapState}</Button></Text>

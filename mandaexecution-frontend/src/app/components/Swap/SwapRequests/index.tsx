@@ -15,14 +15,14 @@ import { useContext, useEffect, useState } from 'react';
 import SwapDetails from '../SwapDetails';
 import {VaultsContext} from '../../../context/vaults'
 import { Vault } from 'intu-sdk/lib/src/models/models';
-import { WalletContext } from '@/app/context/wallet';
 import {MdRefresh} from 'react-icons/md'
+import { useSigner } from '@thirdweb-dev/react';
 
 const SwapRequests = () => {
 
     const [isOpen, setIsOpen] = useState(false); 
     const {vaults, fetchVaults} = useContext(VaultsContext); 
-    const {wallet} = useContext(WalletContext); 
+    const signer = useSigner(); 
     const [currVault, setCurrVault] = useState<Vault|null>(null); 
 
     const handleViewDetails = (vault:Vault) => {
@@ -35,8 +35,7 @@ const SwapRequests = () => {
     }
 
     useEffect(() => {
-        console.log(vaults); 
-    },[vaults, wallet]); 
+    },[vaults, signer]); 
 
     return (
         <div>
