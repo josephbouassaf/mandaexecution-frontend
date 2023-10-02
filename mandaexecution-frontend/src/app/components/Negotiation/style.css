@@ -1,0 +1,226 @@
+/* Common styles */
+* {
+    font-family: Space Grotesk;
+  }
+
+  /* Header styles */
+  .first-header {
+    padding: 3% 0 0 5%;
+    width: 1281px;
+    height: 69.7px;
+    color: #000;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 45px;
+    text-align: center;
+  }
+
+  /* Left boxes styles */
+  .left, .leftBig {
+    position: absolute;
+    left: 5%;
+    top: 23%;
+    width: 610.933px;
+    border-radius: 20px;
+    border: 2px solid #000;
+  }
+  .left {
+    height: 50.931px;
+  }
+  .leftBig {
+    height: 181px;
+    background: #FFF;
+  }
+
+  /* Text styles */
+  .forpro, .forvot {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-weight: 700;
+    text-align: center;
+  }
+  .forpro {
+    width: 211.996px;
+    height: 25.704px;
+    font-size: 16px;
+    line-height: 24px;
+    text-transform: lowercase;
+  }
+
+  /* Button styles */
+  button {
+    position: absolute;
+    right: 3%;
+    top: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 148px;
+    min-width: 140px;
+    padding: 13px;
+    border-radius: 20px;
+    background: #000;
+  }
+  .button2{
+    position: relative;
+    top: 45%;
+    left: 68%;
+    display: flex;
+    width: 148.222px;
+    height: 55.441px;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 20px;
+    background-color: white;
+    border: 2px solid #000;
+  }
+
+  /* Popup styles */
+  .popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(128, 128, 128, 0.8);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .mainpop {
+    display: flex;
+    width: 700px;
+    height: 700px;
+    padding: 32px;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    border-radius: 20px;
+    background: #000;
+  }
+  .description {
+    color: #FFF;
+    font-family: Manrope;
+    font-size: 16.67px;
+    font-style: normal;
+    line-height: 24px;
+  }
+  .option-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  .option {
+    flex: 2;
+    padding: 10px;
+    color: #575757;
+  }
+  .option.selected {
+    color: #fff;
+  }
+  .result-box {
+    position:center;
+    padding: 15px;
+    background-color: black;
+    width: 200%;
+    border-radius: 10px;
+    left:-400px;
+    border: 1px solid #E5E5E5;
+  }
+  .option-content {
+    display: none;
+  }
+  .login{
+    position:center;
+
+}
+table {
+  position: relative;
+  left: 3%;
+  width: 90%;
+  margin: 20px 20px;
+  font-family: Space Grotesk;
+  border: 2px solid;
+  border-color: #000;
+  border-radius: 20px;
+}
+
+th {
+  border-bottom: 2px solid #000;
+  padding: 10px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+td {
+  border-bottom: 1px solid #ccc;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.table-button {
+  background: #000;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+.styled-form {
+color: white;
+}
+
+.form-group {
+margin-bottom: 15px;
+}
+
+.date-group {
+display: flex;
+justify-content: space-between;
+}
+
+.form-label {
+display: block;
+margin-bottom: 5px;
+}
+
+.form-input {
+width: 100%;
+padding: 8px;
+background-color: white;
+border: none;
+border-radius: 4px;
+}
+
+.submit-btn {
+background-color: #0066cc;
+color: white;
+padding: 10px 20px;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+position: relative;
+top:0%;
+}
+
+.add-address-btn {
+background-color: white;
+color: black;  /* Text color */
+border: 1px solid black; /* Border to distinguish button from background */
+padding: 10px;  /* Optional: add some padding */
+margin-left: 5px;  /* Optional: add some margin */
+cursor: pointer; /* Changes the cursor to a hand, indicating it's clickable */
+}
+.result-box {
+color: white; /* Changed from black to match with the button style */
+font-size: 16px;
+text-align: center;
+margin-top: 20px;
+}
+.submit-btn:hover {
+background-color: #0052a3;
+}
