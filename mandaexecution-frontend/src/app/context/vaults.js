@@ -1,7 +1,7 @@
 'use client'
 import { createContext, useContext, useEffect, useState } from "react"
-import {WalletContext} from './wallet'
 import {getUserVaults} from '../functions/intu/intu'
+import { useSigner } from "@thirdweb-dev/react";
 
 export const VaultsContext = createContext(); 
 
@@ -9,14 +9,13 @@ export const VaultsProvider = ({children}) => {
     const initialState = []; 
 
     const [vaults, setvaults] = useState(initialState);
-    const {wallet} = useContext(WalletContext); 
+    const signer = useSigner();  
 
     const fetchVaults = async () => {
-        if(wallet) {
-            const address = await wallet.getAddress(); 
+        if(signer) {
+            const address = await signer.getAddress(); 
             const arr = await getUserVaults(address); 
             setvaults(arr); 
-
         } else {
             setvaults(initialState); 
         }
@@ -25,7 +24,7 @@ export const VaultsProvider = ({children}) => {
     useEffect(() => {
 
         fetchVaults(); 
-    },[wallet])
+    },[signer])
 
     
     return (

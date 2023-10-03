@@ -73,9 +73,9 @@ const Services = () => {
                         <ServiceCard
                         title="Treasury Allocation"
                         description="Decide together on the amount of resources to allocate."
-                        link=""
+                        link="tools/negotiation"
                         buttonIcon={TbUsersGroup}
-                        additionalText='Coming Soon'
+                        additionalText='Beta'
                         actionButtonText="Negotiate"/>
                         <ServiceCard
                         title="Counter offer"
