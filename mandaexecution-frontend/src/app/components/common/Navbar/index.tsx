@@ -7,6 +7,7 @@ import Link from "next/link";
 import FeedbackModal from "../FeedbackModal";
 import { ConnectWallet } from "@thirdweb-dev/react";
 import "../../../styles/Navbar/navbar.css"
+import { BsQrCodeScan } from "react-icons/bs";
 
 const Navbar = () => {
 
@@ -15,6 +16,11 @@ const Navbar = () => {
     const handleOpenFeedbackModal = () => {
         setOpenFeedbackModal(true); 
     } 
+
+    const handleScanKeyFragments = async () => {
+
+    }
+
     return (
         <Flex w={'100%'} boxShadow={"lg"} height={{base:"10vh",md:"10vh", l:"12vh",xl: "12vh"}}>
             <FeedbackModal isOpen={openFeedbackModal} onClose={() => setOpenFeedbackModal(false)}/>
@@ -25,8 +31,9 @@ const Navbar = () => {
                 <Flex display={{base:'block', md:'none'}} alignItems={'center'}>
                     <Link href="/"><Image loading={'eager'} ml={2} src="/manda-logo.jpg" width={"15vw"} alt="Logo"></Image></Link>
                 </Flex>
-                <Flex maxWidth={'80vw'}mr={'3vw'} flexDirection={'row'} alignItems={'center'}>
-                    <Button onClick={handleOpenFeedbackModal} margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "grey", }}} borderRadius={'full'} leftIcon={<Icon as={BiConversation}></Icon>} backgroundColor={'black'} color={'white'}>Talk to us</Button>
+                <Flex maxWidth={'80vw'} mb={'5px'} mr={'3vw'} flexDirection={'row'} alignItems={'center'}>
+                    <Button borderWidth={'1px'} borderColor={'black'} onClick={handleOpenFeedbackModal} margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "white", }}} borderRadius={'full'} leftIcon={<Icon as={BiConversation}></Icon>} backgroundColor={'white'} color={'black'}>Talk to us</Button>
+                    <Button onClick={handleScanKeyFragments} margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "grey", }}} borderRadius={'full'} leftIcon={<BsQrCodeScan/>} backgroundColor={'black'} color={'white'}>Start Recovery</Button>
                     <ConnectWallet
                         btnTitle="Connect Wallet"
                         className="connect-button"

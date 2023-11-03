@@ -1,102 +1,55 @@
-import { Flex, Text } from '@chakra-ui/react';
-import React from 'react';
-import ServicesRow from './Services/ServicesRow';
-import ServiceCard from './Services/ServiceCard';
-import {AiOutlineSwap} from "react-icons/ai";
-import {FiGitMerge} from "react-icons/fi";
-import {TbPacman} from "react-icons/tb";
-import {TbUsersGroup} from "react-icons/tb"; 
-import {BiTimer, BiPaperPlane} from "react-icons/bi"; 
-import {MdCallSplit} from "react-icons/md"; 
+import { Button, Flex, Text } from '@chakra-ui/react';
+import { ConnectWallet, useSigner } from '@thirdweb-dev/react';
+import React, { useState } from 'react';
+import {MdOutlineAddCircleOutline} from "react-icons/md"; 
+import {BsQrCodeScan} from "react-icons/bs"
+import CreateVault from '../Vault/Create';
 
+const Main = () => {
 
-const Services = () => {
+    const [startButtonDisplay, setStartButtonDisplay] = useState('block'); 
+    const [createVaultDisplay, setCreateVaultDisplay] = useState('none')
+
+    const handleStartHere = () => {
+        setStartButtonDisplay('none'); 
+        setCreateVaultDisplay('block'); 
+    }
+    const handleScanKeyFragments = async () => {
+
+    }
+
+    const signer = useSigner(); 
+
     return (
         <>
-                <Flex w={"100%"} flexDirection={'column'} justifyContent={'center'}>
+                 <Flex w={"100%"} flexDirection={'column'} justifyContent={'center'}>
                     <Text marginTop={'4vh'} fontSize={'42px'} textAlign={'center'}>
-                        Welcome to <span style={{fontWeight:'999'}}>Manda.</span>
+                        Welcome To <span style={{fontWeight:'999'}}>Manda.</span>
                     </Text>
-                    <Text fontWeight={'bold'} fontSize={'24px'} textAlign={'center'}>Architect your business operation, execute it later.</Text>
+                    <Text fontWeight={'bold'} fontSize={'14px'} textAlign={'center'}><i>"Plans are worthless, but planning is everything" ~ Dr. Einsenhower</i></Text>
                 </Flex>
-                <Flex w={'100%'} justifyContent={'center'} flexDirection={'column'}>
-                    <ServicesRow props={{title:'Investment Contracts'}}>
-                        <ServiceCard
-                        title="OTC"
-                        description="Purchase any digital assets. Engage in treasury diversification, liquidity consolidation, and more with one or more counterparties."
-                        link="/tools/swap"
-                        buttonIcon={AiOutlineSwap}
-                        additionalText='Beta'
-                        actionButtonText="Swap"/>
-                        <ServiceCard
-                        title="DAO Merger"
-                        description="Plan & Execute DAO Merger operations. Merge your treasury, communities in a single operation."
-                        link=""
-                        buttonIcon={FiGitMerge}
-                        additionalText='Coming Soon'
-                        actionButtonText="Merge"/>
-                        <ServiceCard
-                        title="DAO Acquisitions"
-                        description="Plan & Execute DAO Acquisition operations. Increase your reach, become an unforkable moat."
-                        link=""
-                        buttonIcon={TbPacman}
-                        additionalText='Coming Soon'
-                        actionButtonText="Acquire"/>
-                        <ServiceCard
-                        title="Vesting"
-                        description="Schedule vesting plans, release tokens progressively over time."
-                        link=""
-                        buttonIcon={BiTimer}
-                        additionalText='Coming Soon'
-                        actionButtonText="Schedule"/>
-                        <ServiceCard
-                        title="Airdrop"
-                        description="Distribute tokens to a whitelist in a single operation."
-                        link=""
-                        buttonIcon={BiPaperPlane}
-                        additionalText='Coming Soon'
-                        actionButtonText="Airdrop"/>
-                        <ServiceCard
-                        title="DAO Dissolution"
-                        description="Plan & execute the dissolution of your organization."
-                        link=""
-                        buttonIcon={MdCallSplit}
-                        additionalText='Coming Soon'
-                        actionButtonText="Dissolve"/>
-                    </ServicesRow>
-                </Flex>
-                <Flex marginTop={'4vh'} w={"100%"} flexDirection={'column'} justifyContent={'center'}>
-                    <Text fontWeight={'bold'} fontSize={'24px'} textAlign={'center'}>Harvest and Compute collective intents.</Text>
-                </Flex>
-                <Flex w={'100%'} justifyContent={'center'} flexDirection={'column'}>
-                    <ServicesRow props={{title:'Governance'}}>
-                        <ServiceCard
-                        title="Treasury Allocation"
-                        description="Decide together on the amount of resources to allocate."
-                        link=""
-                        buttonIcon={TbUsersGroup}
-                        additionalText='Coming Soon'
-                        actionButtonText="Negotiate"/>
-                        <ServiceCard
-                        title="Counter offer"
-                        description="Challenge a proposal, find a more satisfying price."
-                        link=""
-                        buttonIcon={TbUsersGroup}
-                        additionalText='Coming Soon'
-                        actionButtonText="Negotiate"/>
-                        <ServiceCard
-                        title="Asset pricing"
-                        description="Discover the price of a tokenized asset together, decide together."
-                        link=""
-                        buttonIcon={TbUsersGroup}
-                        additionalText='Coming Soon'
-                        actionButtonText="Negotiate"/>
-                    
-                    </ServicesRow>
-                    
+                <Flex w={'100%'} justifyContent={'center'}>
+                    {signer ? 
+                        <Flex flexDirection={'column'} w={'100%'} alignItems={'center'}>
+                            <Text display={startButtonDisplay} fontWeight={'bold'}>The best time to protect your assets was yesterday.</Text>
+                            <Button display={startButtonDisplay} onClick={handleStartHere} margin={1} sx={{"&:hover": {textDecoration: "none", backgroundColor: "grey", }}} borderRadius={'full'} leftIcon={<MdOutlineAddCircleOutline/>} backgroundColor={'black'} color={'white'}>Start Here</Button>
+                            <CreateVault display={createVaultDisplay}></CreateVault>
+                        </Flex>
+                        : 
+                        <div style={{textAlign:'center'}}>
+                            <Text>To access our Wallet Protection and Recovery Services please connect your wallet</Text>
+                            <ConnectWallet
+                                btnTitle="Connect Wallet"
+                                className="connect-button"
+                                
+                            />
+                            <Text fontWeight={'bold'}>OR</Text>
+                            <Text>Scan your backup vault key fragments</Text>
+                        </div>
+                    }
                 </Flex>
         </>
     ); 
 }
 
-export default Services;
+export default Main;
