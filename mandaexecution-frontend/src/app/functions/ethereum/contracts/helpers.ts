@@ -18,9 +18,9 @@ export async function getTokenSymbol(tokenAddress: string) {
     return symbol; 
 }
 
-export async function hasAllowance(contractAddress:string, userAddress:string,vaultPublicKey:string) {
+export async function hasAllowance(contractAddress:string, userAddress:string,spender:string) {
     const contract = new ethers.Contract(contractAddress, ERC20.abi,provider); 
-    const allowance:BigNumber = (await contract.allowance(userAddress,vaultPublicKey)); 
+    const allowance:BigNumber = (await contract.allowance(userAddress,spender)); 
     return allowance.isZero() ? false : true; 
 }
 

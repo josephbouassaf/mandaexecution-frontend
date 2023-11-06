@@ -1,3 +1,4 @@
+import { MANAGER_CONTRACT_ADDRESS } from "@/app/functions/ethereum/contants";
 import { registerBackupVault } from "@/app/functions/ethereum/contracts/functions";
 import { allowVaultToSpend, hasAllowance } from "@/app/functions/ethereum/contracts/helpers";
 import { Asset, VaultWithKeys } from "@/app/type";
@@ -30,10 +31,10 @@ const ConfirmApprovals = (props: Props) => {
     const handleRequestApproval = async () => {
         if(counter < protectList.length && signer) {
             setIsLoading(true); 
-            await allowVaultToSpend(vaultWithKeys.vaultMPK, protectList[counter].address, String(protectList[counter].amount),signer); 
+            await allowVaultToSpend(MANAGER_CONTRACT_ADDRESS, protectList[counter].address, String(protectList[counter].amount),signer); 
             // check if allowance is set properly
             const userAddress = await signer.getAddress(); 
-            const isAllowed = await hasAllowance(protectList[counter].address,userAddress,vaultWithKeys.vaultMPK); 
+            const isAllowed = await hasAllowance(protectList[counter].address,userAddress,MANAGER_CONTRACT_ADDRESS); 
             if(isAllowed)
                 setCounter(counter+1);
             setIsLoading(false); 
@@ -43,6 +44,7 @@ const ConfirmApprovals = (props: Props) => {
     const handleClickNext = async () => { // hide that component, and show the next one 
         console.log(vaultWithKeys,counter,protectList);
         if(vaultWithKeys && (counter >= protectList.length) && signer) { // if all assets have been protected, register the vault
+            setIsLoading(true); 
             await registerBackupVault(
                 vaultWithKeys.vaultMPK,
                 protectList.map(asset => asset.address),
@@ -50,12 +52,14 @@ const ConfirmApprovals = (props: Props) => {
                 vaultWithKeys.keys[vaultWithKeys.keys.length-1].privateKey,
                 signer
                 );
+            setIsLoading(false); 
         }
         // hide the component
         setDisplay(['none','none','block']); 
     }
 
     useEffect(() => {
+        console.log('I go here')
         console.log(counter, protectList.length); 
     },[counter])
         
@@ -86,7 +90,7 @@ const ConfirmApprovals = (props: Props) => {
                 </Table>    
         </TableContainer>
         <Flex flexDirection={'row'} justifyContent={'center'} marginBottom={'5px'}>
-            <Button onClick={handleClickNext} isDisabled={counter < protectList.length} rightIcon={<BsArrowRightCircle fontWeight={'bold'} size={'25'}/>}>Register Vault</Button>
+            <Button isLoading={isLoading && protectList && counter >= protectList.length} onClick={handleClickNext} isDisabled={counter < protectList.length} rightIcon={<BsArrowRightCircle fontWeight={'bold'} size={'25'}/>}>Register Vault</Button>
         </Flex>
         </Container>
     ); 

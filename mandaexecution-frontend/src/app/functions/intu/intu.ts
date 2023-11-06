@@ -111,8 +111,7 @@ export async function isUserRegisteredStep3(vaultAddress:string, signerAddress:s
  * @param emptyTx 
  */
 export async function postTransaction(to:string, signer: Signer, vaultAddress:string, data:string, nonce:number, value:number) {
-    const chainId = (await provider.getNetwork()).chainId;
-    await submitTransaction(to, value, chainId, nonce, data,"","",vaultAddress, signer); 
+    await submitTransaction(to, value, provider._network.chainId, nonce, data,"","",vaultAddress, signer); 
 }
 /**
  * sign a transaction with signer's private key

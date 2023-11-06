@@ -17,3 +17,18 @@ export interface VaultWithKeys {
     vaultMPK:string; 
     keys:Wallet[]; 
 }
+
+export interface RecoveryPlan {
+    title:string;
+    description:string; 
+    status?:string;
+    receiver:string;
+    funcIdx:string; 
+}
+
+export interface VaultData {
+    vaultAddress:string; 
+    guardians:string[];
+    protectList:string[]; 
+    executionPlan?:RecoveryPlan; 
+}

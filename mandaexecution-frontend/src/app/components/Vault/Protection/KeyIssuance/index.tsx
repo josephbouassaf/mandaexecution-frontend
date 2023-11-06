@@ -1,5 +1,7 @@
-import { VaultWithKeys } from "@/app/type";
+import { getBackupVaultData } from "@/app/functions/ethereum/contracts/functions";
+import { VaultData, VaultWithKeys } from "@/app/type";
 import { Button, Container, Flex, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react";
+import { useSigner } from "@thirdweb-dev/react";
 import { useEffect } from "react";
 import { BsQrCode } from "react-icons/bs";
 import QRCode from "react-qr-code";
@@ -7,7 +9,8 @@ import QRCode from "react-qr-code";
 interface Props {
     vault: VaultWithKeys;
     display:string; 
-    setDisplay: (displayArr:string[]) => void; 
+    setDisplay: (displayArr:string[]) => void;
+    setVaultData: (data:VaultData) => void; 
 
 }
 /**
@@ -15,10 +18,16 @@ interface Props {
  * 
  */
 const KeyIssuance = (props: Props) => {
-    const {vault, display, setDisplay} = props; 
+    const {vault, display, setDisplay, setVaultData} = props;
 
-    const handleClickDone = () => {
+    const signer = useSigner();
+
+    const handleClickDone = async () => {
         setDisplay(['none','none','none']); 
+        if(signer) {
+            const vaultData:VaultData = await getBackupVaultData(signer); 
+            setVaultData(vaultData); 
+        }
     }
 
     return (

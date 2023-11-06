@@ -1,17 +1,18 @@
 import {Container} from "@chakra-ui/react"
 import ProtectList from "./ProtectList";
 import { useEffect, useState } from "react";
-import { Asset, VaultWithKeys } from "@/app/type";
+import { Asset, VaultData, VaultWithKeys } from "@/app/type";
 import { scanWallet } from "@/app/functions/ethereum/contracts/helpers";
 import { useSigner } from "@thirdweb-dev/react";
 import KeyIssuance from "./KeyIssuance";
 import ConfirmApprovals from "./ConfirmApprovals";
 
 interface Props {
-    display:string
+    display:string; 
+    setVaultData: (data:VaultData) => void; 
 }
 const CreateVault = (props: Props) => {
-    const {display} = props; 
+    const {display, setVaultData} = props; 
 
     const [protectList,setProtectList] = useState<Asset[]>([]); 
     
@@ -42,7 +43,7 @@ const CreateVault = (props: Props) => {
         <Container borderRadius={'5px'} display={display} backgroundColor={'#f7faff'} padding={'5px'}>
             <ProtectList setVault={setVault} display={componentDisplay[0]} setDisplay={updateComponentDisplay} protectList={protectList} setProtectList={setProtectList}/>
             <ConfirmApprovals protectList={protectList} vaultWithKeys={vault!} display={componentDisplay[1]} setDisplay={updateComponentDisplay}/>
-            <KeyIssuance vault={vault!} display={componentDisplay[2]} setDisplay={updateComponentDisplay}/>
+            <KeyIssuance setVaultData={setVaultData} vault={vault!} display={componentDisplay[2]} setDisplay={updateComponentDisplay}/>
         </Container>
     ); 
 } 

@@ -1,10 +1,12 @@
 import { createRandomWallet, createRandomWalletWithFunds, fundWallet } from "../ethereum/contracts/helpers"
-import { completeVaultRegistration, getUserVaults, instantiateVault, preRegisterUser, registerUser } from "./intu";
+import { combineSignatures, completeVaultRegistration, getUserVaults, instantiateVault, postTransaction, preRegisterUser, registerUser, signTransaction } from "./intu";
 import { getVaultMPK } from "intu-sdk/lib/src/services/web3";
-import { provider } from "../ethereum/contants";
+import { MANAGER_CONTRACT_ADDRESS, MASTER_KEY, provider } from "../ethereum/contants";
 import { VaultWithKeys } from "@/app/type";
 import { ethers } from "ethers";
-
+import { getBackupVaultAddress, getKeyFragment } from "../ethereum/contracts/functions";
+import ManagerJSON from '../ethereum/contracts/Manager.json'
+import { Vault } from "intu-sdk/lib/src/models/models";
 /**
  * script to create a vault with three signers
  */
@@ -53,16 +55,44 @@ export async function createVaultScript(signer: ethers.Signer):Promise<VaultWith
     return {vaultMPK:vaultMPK, keys:keys}
 }
 
-async function onboardingScript(protectList:string[]) {
-    // create the vault
-    //const resultArr = await createVaultScript();
-    // add vault data to the Manager contract
+/**
+ *
+ * @param keys 
+ * @param ownerAddress 
+ */
+export async function executePlan(keys:string[], ownerAddress:string) {
 
-    // NB: ALLOWANCES FOR THE PROTECT LIST MUST BE GIVEN IN PARALLEL
+    // get the vault addrss
+    const vaultAddress = await getBackupVaultAddress(ownerAddress); 
+    console.log('vault address:'+vaultAddress); 
+    // get the key fragment from the smart contract 
+    const smartContractKey = await getKeyFragment(vaultAddress);
+    console.log('last key:'+smartContractKey)
+    // get wallets
+    const walletSigners = [new ethers.Wallet(keys[0]),new ethers.Wallet(keys[1]),new ethers.Wallet(smartContractKey)]
+    console.log(walletSigners);
+    // get intu vault
+    let intuVaults:Vault[] = await getUserVaults(walletSigners[0].address); 
 
-    //return resultArr; 
+    console.log(intuVaults); 
+
+    // form tx
+    const contractInterface = new ethers.utils.Interface(ManagerJSON.abi); 
+    const data = contractInterface.encodeFunctionData('executePlan',[ownerAddress]); 
+    
+    // get paymaster
+    const signer = new ethers.Wallet(MASTER_KEY); 
+    // post tx
+    await postTransaction(MANAGER_CONTRACT_ADDRESS,signer,vaultAddress,data,intuVaults[0].transactions.length+1,0);
+    // refetch the vault for the txId
+    intuVaults = await getUserVaults(walletSigners[0].address); 
+    // get the txid
+    const txId = intuVaults[0].transactions[intuVaults[0].transactions.length-1].id;
+    //sign
+    for(let wallet of walletSigners) {
+        await signTransaction(wallet,txId,vaultAddress); 
+    }
+    //combine
+    await combineSignatures(walletSigners[0],txId,vaultAddress); 
 }
 
-async function executePlan() {
-
-}

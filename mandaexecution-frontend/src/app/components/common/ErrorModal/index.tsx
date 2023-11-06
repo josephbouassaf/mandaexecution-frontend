@@ -6,12 +6,11 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-    useDisclosure,
     Button
   } from '@chakra-ui/react'
 
   import React from 'react';
-import { ModalProps } from './type';
+import { ModalProps } from '../../../type';
 
   const ErrorModal = (props: ModalProps) => {
     const {isOpen, onOpen, onClose, errorMessage} = props; 
