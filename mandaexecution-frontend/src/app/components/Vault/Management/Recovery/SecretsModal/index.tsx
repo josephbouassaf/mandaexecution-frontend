@@ -69,14 +69,14 @@ const SecretsModal = (props: Props) => {
                             </InputGroup>
                             <Text fontWeight={'bold'}>Fragment #1</Text>
                             <InputGroup>
-                                <Input onChange={e => setFragmentOne(e.target.value)} backgroundColor={'white'} borderWidth='2px' placeholder="fragment #1" ></Input>
+                                <Input type={'password'} onChange={e => setFragmentOne(e.target.value)} backgroundColor={'white'} borderWidth='2px' placeholder="fragment #1" ></Input>
                                 <InputLeftElement>
                                     <Icon as={IoMdKey}></Icon>
                                 </InputLeftElement>
                             </InputGroup>
                             <Text fontWeight={'bold'}>Fragment #2</Text>
                             <InputGroup>
-                                <Input onChange={e => setFragmentTwo(e.target.value)} backgroundColor={'white'} borderWidth='2px' placeholder="fragment #2" ></Input>
+                                <Input type={'password'} onChange={e => setFragmentTwo(e.target.value)} backgroundColor={'white'} borderWidth='2px' placeholder="fragment #2" ></Input>
                                 <InputLeftElement>
                                     <Icon as={IoMdKey}></Icon>
                                 </InputLeftElement>

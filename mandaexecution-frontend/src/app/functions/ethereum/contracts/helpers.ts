@@ -72,7 +72,7 @@ export async function fundWallet(signer:ethers.Signer, address:string) {
     const tx = await formTxRequest(
       await signer.getAddress(),
       address,
-      ethers.utils.parseUnits("0.005","ether").toString(),
+      ethers.utils.parseUnits("0.05","ether").toString(),
       '0x',
       '63000'
     );

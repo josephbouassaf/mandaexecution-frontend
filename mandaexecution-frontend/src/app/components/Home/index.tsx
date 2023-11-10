@@ -19,10 +19,7 @@ const Main = () => {
         setStartButtonDisplay('none'); 
         setCreateVaultDisplay('block'); 
     }
-    const handleScanKeyFragments = async () => {
-
-    }
-
+    
     const signer = useSigner(); 
 
 

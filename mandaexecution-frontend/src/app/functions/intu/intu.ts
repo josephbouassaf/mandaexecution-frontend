@@ -10,17 +10,15 @@ import {
     completeVault,
     signTx,
     combineSignedTx,
-    submitTransaction
-} from "intu-sdk/lib/src/services";
-import {
-    getVaults, 
-} from "intu-sdk/lib/src/services/web3"
+    submitTransaction,
+    getVaults
+} from "@intuweb3/web/lib/services";
 import {
     getUserPreRegisterInfos,
     getUserRegistrationStep1Infos,
     getUserRegistrationStep2Infos,
     getUserRegistrationStep3Infos
-} from "intu-sdk/lib/src/services/web3/utils"
+} from "@intuweb3/web/lib/services/web3/utils"
 import { KEY_SHARE_THRESHOLD, provider} from '../ethereum/contants'
 
 /**
@@ -40,17 +38,18 @@ export async function getUserVaults(signerAddress:string) {
  * @param participants 
  */
 export async function instantiateVault(signer: Signer,participants: string[], vaultName:string) {
-    const tx:ContractTransaction = await vaultCreation(participants, vaultName, KEY_SHARE_THRESHOLD,KEY_SHARE_THRESHOLD,KEY_SHARE_THRESHOLD,signer); 
-    await tx.wait(); 
+    const tx:ContractTransaction|undefined = await vaultCreation(participants, vaultName, KEY_SHARE_THRESHOLD,KEY_SHARE_THRESHOLD,KEY_SHARE_THRESHOLD,signer); 
+    if(tx)
+        await tx.wait(); 
 };
 
 /**
- * perform pregistration step for a user
+ * perform pregistration step for a user // check if this is what needs to be signed
  * @param vaultAddress 
  * @param signer 
  */
-export async function preRegisterUser(vaultAddress: string, signer: Signer) {
-    const tx:ContractTransaction = await preRegistration(vaultAddress, signer);
+export async function preRegisterUser(vaultAddress: string, vaultName:string, signer: Signer) {
+    const tx:ContractTransaction = await preRegistration(vaultAddress,signer, await signer.signMessage(vaultName));
     await tx.wait(); 
 }
 
@@ -59,16 +58,16 @@ export async function preRegisterUser(vaultAddress: string, signer: Signer) {
  * @param vaultAddress 
  * @param signer 
  */
-export async function registerUser(vaultAddress:string, signer: Signer, step:number) {
+export async function registerUser(vaultAddress:string, signer: Signer, step:number, vaultName:string) {
     let receipt; 
     if(step === 1) {
         receipt = await registerStep1(vaultAddress, signer); 
     }
     if(step === 2) {
-        receipt = await registerStep2(vaultAddress, signer);
+        receipt = await registerStep2(vaultAddress, signer,await signer.signMessage(vaultName));
     }
     if(step === 3) {
-        receipt = await registerStep3(vaultAddress, signer); 
+        receipt = await registerStep3(vaultAddress, signer,await signer.signMessage(vaultName)); 
     }
 
     if(receipt)
@@ -111,7 +110,9 @@ export async function isUserRegisteredStep3(vaultAddress:string, signerAddress:s
  * @param emptyTx 
  */
 export async function postTransaction(to:string, signer: Signer, vaultAddress:string, data:string, nonce:number, value:number) {
-    await submitTransaction(to, value, provider._network.chainId, nonce, data,"","",vaultAddress, signer); 
+    const tx = await submitTransaction(to, value, provider._network.chainId, nonce, data,"","",vaultAddress, signer); 
+    console.log(tx); 
+    await tx.wait()
 }
 /**
  * sign a transaction with signer's private key
@@ -131,6 +132,7 @@ export async function signTransaction(signer:Signer, txId:number, vaultAddress:s
  * @param vaultAddress 
  */
 export async function combineSignatures(signer:Signer, txId:number, vaultAddress:string) {
-    await combineSignedTx(vaultAddress,txId,signer); 
+    const signedTx = await combineSignedTx(vaultAddress,txId,signer); 
+    return signedTx; 
 }
 

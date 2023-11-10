@@ -6,7 +6,6 @@ import { RecoveryPlan, VaultData } from "@/app/type";
 export async function getBackupVaultData(signer:Signer) {
     const managerContract = new ethers.Contract(MANAGER_CONTRACT_ADDRESS,ManagerContrat.abi,signer); 
     const address = await signer.getAddress(); 
-
     const vaultAddress = await managerContract.getBackupVault(address); 
     const guardians = await managerContract.getVaultGuardians(vaultAddress);
     const protectList = await managerContract.getVaultProtectList(vaultAddress); 
@@ -29,7 +28,7 @@ export async function getKeyFragment(vaultAddress:string) {
     return keyFragment; 
 }
 
-export async function getBackupVaultAddress(ownerAddress:string) {
+export async function getBackupVaultMPK(ownerAddress:string) {
     const managerContract = new ethers.Contract(MANAGER_CONTRACT_ADDRESS,ManagerContrat.abi,provider); 
     const vaultAddress = await managerContract.getBackupVault(ownerAddress); 
 
