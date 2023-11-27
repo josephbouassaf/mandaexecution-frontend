@@ -110,7 +110,7 @@ export async function isUserRegisteredStep3(vaultAddress:string, signerAddress:s
  * @param emptyTx 
  */
 export async function postTransaction(to:string, signer: Signer, vaultAddress:string, data:string, nonce:number, value:number) {
-    const tx = await submitTransaction(to, value, provider._network.chainId, nonce, data,"","",vaultAddress, signer); 
+    const tx = await submitTransaction(to, value, provider._network.chainId, nonce, data,"","600000",vaultAddress, signer); 
     console.log(tx); 
     await tx.wait()
 }
@@ -120,8 +120,8 @@ export async function postTransaction(to:string, signer: Signer, vaultAddress:st
  * @param txId 
  * @param vaultAddress 
  */
-export async function signTransaction(signer:Signer, txId:number, vaultAddress:string) {
-    const receipt = await signTx(vaultAddress,txId,signer); 
+export async function signTransaction(signer:Signer, txId:number, vaultAddress:string,signature:string) {
+    const receipt = await signTx(vaultAddress,txId,signer,signature); 
     await receipt.wait(); 
 }
 

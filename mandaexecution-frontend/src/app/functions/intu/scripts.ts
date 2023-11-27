@@ -3,9 +3,9 @@ import { combineSignatures, completeVaultRegistration, getUserVaults, instantiat
 import { _getProposal, _getTransaction, getVault } from "@intuweb3/web/lib/services/web3";
 import { MANAGER_CONTRACT_ADDRESS, MASTER_KEY, provider } from "../ethereum/contants";
 import { VaultWithKeys } from "@/app/type";
-import { ethers } from "ethers";
+import { Signer, Wallet, ethers } from "ethers";
 import { getBackupVaultMPK, getKeyFragment } from "../ethereum/contracts/functions";
-import ManagerJSON from '../ethereum/contracts/Manager.json'
+import ManagerJSONABI from '../ethereum/contracts/Manager.json'
 import { Vault } from "@intuweb3/web/lib/services/web3/models/vault";
 /**
  * script to create a vault with three signers
@@ -43,6 +43,7 @@ export async function createVaultScript(signer: ethers.Signer):Promise<VaultWith
     for(let owner of keys) {
         await registerUser(vault!.vaultAddress,owner,3,name)
     }
+    //create polibaseKey
     console.log('step 3 done');
     // complete vault
     await completeVaultRegistration(vault!.vaultAddress, keys[0]); 
@@ -54,7 +55,6 @@ export async function createVaultScript(signer: ethers.Signer):Promise<VaultWith
     // return values to save in the manager contract
     return {vaultMPK:v.masterPublicAddress!, keys:keys}
 }
-
 /**
  *
  * @param keys 
@@ -76,22 +76,28 @@ export async function executePlan(keys:string[], ownerAddress:string) {
         ethers.utils.formatEther(await provider.getBalance(walletSigners[1].address)),
         ethers.utils.formatEther(await provider.getBalance(walletSigners[2].address))
         );
+    console.log(walletSigners[0].address); 
     // form tx
-    const contractInterface = new ethers.utils.Interface(ManagerJSON.abi); 
+    const contractInterface = new ethers.utils.Interface(ManagerJSONABI); 
     const data = contractInterface.encodeFunctionData('executePlan',[ownerAddress]); 
     
     const vaultNonce = await provider.getTransactionCount(vaultMPK);
     
     let intuVaults:Vault[]  = await getUserVaults(walletSigners[0].address); 
+
+    //asset: 0x6477a64321b80ca695cc91cddaffa133d722afa7
+    //owner:0xa40993BD601cBbAc1212b5b79FEC62cDf603ccD9
+    // receiver:0xB534760Fb6e9FB4d328D228871B9E39FeA456f34
  
     await postTransaction(MANAGER_CONTRACT_ADDRESS,walletSigners[0],intuVaults[0].vaultAddress,data,vaultNonce,0);
-    // refetch the vault for the txId
+    // refetch the vault for the updated transaction count
     console.log('transaction posted')
     intuVaults = await getUserVaults(walletSigners[0].address); 
+    console.log(intuVaults[0])
     //sign
     for(let wallet of walletSigners) {
-        await signTransaction(wallet,intuVaults[0].transactionCount,intuVaults[0].vaultAddress); 
-        console.log('transaction signed')
+        await signTransaction(wallet,intuVaults[0].transactionCount,intuVaults[0].vaultAddress,await wallet.signMessage(intuVaults[0].name)); 
+        console.log('transaction signed by: '+wallet.address); 
     }
     //combine
     const signedTx = await combineSignatures(walletSigners[0],intuVaults[0].transactionCount,intuVaults[0].vaultAddress); 

@@ -2,8 +2,6 @@ import { getBackupVaultData } from "@/app/functions/ethereum/contracts/functions
 import { VaultData, VaultWithKeys } from "@/app/type";
 import { Button, Container, Flex, Table, TableCaption, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react";
 import { useSigner } from "@thirdweb-dev/react";
-import { useEffect } from "react";
-import { BsQrCode } from "react-icons/bs";
 import QRCode from "react-qr-code";
 
 interface Props {

@@ -23,7 +23,7 @@ export interface RecoveryPlan {
     description:string; 
     status?:string;
     receiver:string;
-    funcIdx:string; 
+    //funcIdx:string; 
 }
 
 export interface VaultData {

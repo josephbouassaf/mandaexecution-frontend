@@ -1,11 +1,7 @@
-import { addPlan } from "@/app/functions/ethereum/contracts/functions";
-import { RecoveryPlan } from "@/app/type";
 import { Button, Divider, Flex, Icon, Input, InputGroup, InputLeftElement, Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay, Select, Stack, Text, Textarea } from "@chakra-ui/react";
-import { useSigner } from "@thirdweb-dev/react";
-import { ethers } from "ethers";
 import { useEffect, useState } from "react";
-import { LiaEthereum } from "react-icons/lia"
 import {IoMdWallet,IoMdKey} from "react-icons/io"
+import {BiSolidCheckCircle} from "react-icons/bi"
 import { executePlan } from "@/app/functions/intu/scripts";
 
 interface Props {
@@ -17,13 +13,11 @@ interface Props {
  * @param props 
  * @returns 
  */
-const SecretsModal = (props: Props) => {
+const RecoveryModal = (props: Props) => {
 
     const {isOpen, onClose} = props; 
     
-    const signer = useSigner(); 
-
-    
+    const [success,setSuccess] = useState(false); 
     const [isLoading, setIsLoading] = useState(false);
     
     const [fragmentOne, setFragmentOne] = useState(''); 
@@ -31,7 +25,6 @@ const SecretsModal = (props: Props) => {
     const [ownerAddress, setOwnerAddress] = useState('')
 
     const isSubmitDisabled = () => {
-        
         return ownerAddress.length === 0 || fragmentOne.length === 0 || fragmentTwo.length === 0; 
     }
 
@@ -39,6 +32,7 @@ const SecretsModal = (props: Props) => {
         setIsLoading(true); 
         await executePlan([fragmentOne,fragmentTwo],ownerAddress); 
         setIsLoading(false); 
+        setSuccess(true); 
 
     }
 
@@ -59,6 +53,7 @@ const SecretsModal = (props: Props) => {
                     </ModalHeader>
                     <ModalBody>
                     <Flex w='100%' direction='column'>
+                    {success ?
                         <Stack spacing='20px' alignItems={'center'}>
                             <Text fontWeight={'bold'}>Lost Wallet Address</Text>
                             <InputGroup>
@@ -83,10 +78,16 @@ const SecretsModal = (props: Props) => {
                             </InputGroup>
                             <Button isLoading={isLoading} onClick={handleExecutePlan} backgroundColor={'white'}  color={'black'}  borderWidth={'2px'} borderColor={'black'} m={5} isDisabled={isSubmitDisabled()}>Recover Assets</Button>    
                         </Stack>
+                        :
+                        <Stack spacing='20px' alignItems={'center'}>
+                            <Text fontWeight={'bold'}>Your assets have been recovered successfully! Please verify the receiver's account, the assets should be there!</Text>
+                            <Icon alignSelf={'center'} boxSize={100} color={'green.400'} as={BiSolidCheckCircle}></Icon>
+                        </Stack>
+                        }
                     </Flex>
                 </ModalBody>
             </ModalContent>
         </Modal>
     ); 
 }
-export default SecretsModal; 
+export default RecoveryModal; 

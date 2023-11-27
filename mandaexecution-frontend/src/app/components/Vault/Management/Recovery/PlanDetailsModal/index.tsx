@@ -3,7 +3,6 @@ import { RecoveryPlan } from "@/app/type";
 import { Button, Divider, Flex, Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay, Stack, Text } from "@chakra-ui/react";
 import { useSigner } from "@thirdweb-dev/react";
 import { useState } from "react";
-import { MdOutlineHealthAndSafety } from "react-icons/md";
 
 interface Props {
     isOpen:boolean; 
@@ -22,9 +21,6 @@ const PlanDetailsModal = (props: Props) => {
 
     }
 
-    const handleExecutePlan = () => {
-        
-    }
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay/>

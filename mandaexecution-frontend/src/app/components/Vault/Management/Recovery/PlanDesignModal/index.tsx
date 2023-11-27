@@ -37,7 +37,7 @@ const PlanDesignModal = (props: Props) => {
     const handleSubmitRecoveryPlan = async () => {
         if(signer) {
             setIsLoading(true)
-            const plan:RecoveryPlan = {title:title, description: description, receiver:receiver,funcIdx:funcIdx}; 
+            const plan:RecoveryPlan = {title:title, description: description, receiver:receiver}; 
             
             await addPlan(signer,plan); 
 
